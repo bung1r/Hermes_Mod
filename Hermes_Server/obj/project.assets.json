@@ -653,11 +653,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Server\\Hermes_Server.csproj",
+      "projectUniqueName": "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Server\\Hermes_Server.csproj",
       "projectName": "Hermes_Server",
-      "projectPath": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Server\\Hermes_Server.csproj",
+      "projectPath": "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Server\\Hermes_Server.csproj",
       "packagesPath": "C:\\Users\\lamtr\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Server\\obj\\",
+      "outputPath": "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Server\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\lamtr\\AppData\\Roaming\\NuGet\\NuGet.Config"

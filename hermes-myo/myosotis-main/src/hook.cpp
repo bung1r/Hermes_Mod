@@ -227,9 +227,16 @@ uint8_t* alloc_trampoline(size_t size) {
 // trampoline can't be built safely (instruction boundaries don't align), falls
 // back to methodPointer-only and returns the original methodPointer.
 void* install_inline(::myosotis::il2cpp::Il2CppMethod* method, void* new_ptr) {
-    if (!method || !new_ptr) return nullptr;
+    if (!method || !new_ptr) {
+        MYO_LOG("hook", "Method or new ptr null, {} and {}", method, new_ptr);
+        return nullptr;
+    }
+    
     void* old_method_ptr = write_method_ptr(method, new_ptr);
-    if (!old_method_ptr) return nullptr;
+    if (!old_method_ptr) {
+        MYO_LOG("hook", "old method ptr null");
+        return nullptr;
+    }
 
     auto* orig = static_cast<uint8_t*>(old_method_ptr);
 

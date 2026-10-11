@@ -158,8 +158,9 @@ void init_all() {
     init_coin_model(img, namespaze);
 
     // stuff in their own files (w organization!)
+    init_utils(asms);
     init_static(img, namespaze);
-    init_localization(img, namespaze);
+    init_localization(img, namespaze, mscorlibImg);
     init_json(img, namespaze, jsonImg);
     init_battle_models(img, namespaze);
     init_buff_stuff(img, namespaze);

@@ -81,12 +81,16 @@ const char*     method_get_name(Il2CppMethod* m);
 Il2CppType*     method_get_return_type(Il2CppMethod* m);
 uint32_t        method_get_param_count(Il2CppMethod* m);
 bool            method_is_instance(Il2CppMethod* m);
+bool            method_is_generic(Il2CppMethod* m);
 const char*     method_get_param_name(Il2CppMethod* m, uint32_t i);
 Il2CppType*     method_get_param(Il2CppMethod* m, uint32_t i);
+Il2CppObject*   method_get_object(Il2CppMethod* m, Il2CppClass* refClass);
+Il2CppMethod*   method_get_from_reflection(Il2CppObject* reflectionMethod);
 
 int             type_get_type(Il2CppType* t);
 const char*     type_get_name(Il2CppType* t);
 Il2CppClass*    type_get_class_or_element_class(Il2CppType* t);
+Il2CppObject*   type_get_object(Il2CppType* t);
 
 Il2CppGCHandle  gchandle_new(Il2CppObject* obj, bool pinned);
 Il2CppObject*   gchandle_get_target(Il2CppGCHandle gchandle);

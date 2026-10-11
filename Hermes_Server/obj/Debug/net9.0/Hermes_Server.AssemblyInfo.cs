@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Hermes_Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9287acdeed1777513da0be4a704714bd4a392d82")]
 [assembly: System.Reflection.AssemblyProductAttribute("Hermes_Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Hermes_Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

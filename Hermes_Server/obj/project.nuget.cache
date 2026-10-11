@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "kh9pyMiB5js=",
+  "dgSpecHash": "Fvaz5gbtMWs=",
   "success": true,
-  "projectFilePath": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Server\\Hermes_Server.csproj",
+  "projectFilePath": "C:\\Users\\lamtr\\Hermes_Mod\\hermes_server\\Hermes_Server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lamtr\\.nuget\\packages\\microsoft.extensions.configuration\\10.0.11\\microsoft.extensions.configuration.10.0.11.nupkg.sha512",
     "C:\\Users\\lamtr\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\10.0.11\\microsoft.extensions.configuration.abstractions.10.0.11.nupkg.sha512",

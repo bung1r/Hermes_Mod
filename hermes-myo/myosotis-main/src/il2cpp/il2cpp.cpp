@@ -81,8 +81,11 @@ bool init() {
     (void)fn("il2cpp_method_is_instance");
     (void)fn("il2cpp_method_get_param");
     (void)fn("il2cpp_method_get_param_name");
+    (void)fn("il2cpp_method_get_object");
+    (void)fn("il2cpp_method_get_from_reflection");
     (void)fn("il2cpp_type_get_type");
     (void)fn("il2cpp_type_get_name");
+    (void)fn("il2cpp_type_get_object");
     (void)fn("il2cpp_gchandle_new");
     (void)fn("il2cpp_gchandle_get_target");
     (void)fn("il2cpp_gchandle_free");
@@ -236,9 +239,15 @@ uint32_t method_get_param_count(Il2CppMethod* m) {
     using Sig = uint32_t (*)(Il2CppMethod*);
     return fn_t<Sig>("il2cpp_method_get_param_count")(m);
 }
+
 bool method_is_instance(Il2CppMethod* m) {
     using Sig = bool (*)(Il2CppMethod*);
     return fn_t<Sig>("il2cpp_method_is_instance")(m);
+}
+
+bool method_is_generic(Il2CppMethod* m) {
+    using Sig = bool (*)(Il2CppMethod*);
+    return fn_t<Sig>("il2cpp_method_is_generic")(m);
 }
 
 const char* method_get_param_name(Il2CppMethod* m, uint32_t index) {
@@ -249,6 +258,16 @@ const char* method_get_param_name(Il2CppMethod* m, uint32_t index) {
 Il2CppType* method_get_param(Il2CppMethod* m, uint32_t index) {
     using Sig = Il2CppType* (*)(Il2CppMethod*, uint32_t);
     return fn_t<Sig>("il2cpp_method_get_param")(m, index);
+}
+
+Il2CppObject* method_get_object(Il2CppMethod* m, Il2CppClass* refClass) {
+    using Sig = Il2CppObject* (*)(Il2CppMethod*, Il2CppClass*);
+    return fn_t<Sig>("il2cpp_method_get_object")(m, refClass);
+}
+
+Il2CppMethod* method_get_from_reflection(Il2CppObject* reflectionMethod) {
+    using Sig = Il2CppMethod* (*)(Il2CppObject*);
+    return fn_t<Sig>("il2cpp_method_get_from_reflection")(reflectionMethod);
 }
 
 int type_get_type(Il2CppType* t) {
@@ -264,6 +283,12 @@ Il2CppClass* type_get_class_or_element_class(Il2CppType* t) {
     using Sig = Il2CppClass* (*)(Il2CppType*);
     return fn_t<Sig>("il2cpp_type_get_class_or_element_class")(t);
 }
+Il2CppObject* type_get_object(Il2CppType* t) {
+    using Sig = Il2CppObject* (*)(Il2CppType*);
+    return fn_t<Sig>("il2cpp_type_get_object")(t);
+}
+
+
 Il2CppGCHandle gchandle_new(Il2CppObject* obj, bool pinned) {
     using Sig = Il2CppGCHandle (*)(Il2CppObject*, bool);
     return fn_t<Sig>("il2cpp_gchandle_new")(obj, pinned);

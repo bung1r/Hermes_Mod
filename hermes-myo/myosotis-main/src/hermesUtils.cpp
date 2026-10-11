@@ -25,10 +25,10 @@ il2cpp::Il2CppObject* runtime_invoke(il2cpp::Il2CppMethod* method, il2cpp::Il2Cp
         MYO_LOG("HermesUtils", "Method cannot be found");
         return nullptr;
     }
-    if (!obj) {
-        MYO_LOG("HermesUtils", "Obj cannot be found");
-        return nullptr;
-    }
+    // if (!obj) {
+    //     MYO_LOG("HermesUtils", "Obj cannot be found");
+    //     return nullptr;
+    // } // I forget static functions exist.
 
     il2cpp::Il2CppObject* returnObj = il2cpp::runtime_invoke(method, obj, params, &exc);
 
@@ -47,14 +47,85 @@ ClassCache GetClass(std::string accessName) {
 
     MYO_LOG("HermesUtils", "Could not find ClassCache with access name {}", accessName);
 
-    return ClassCache();
+    return {};
 }
 
+ClassCache& GetClassRef(std::string accessName) {
+    if (classes.contains(accessName)) {
+        return classes[accessName];
+    }
 
+    MYO_LOG("HermesUtils", "Could not find ClassCache with access name {}", accessName);
 
-ClassCache* RegisterClassOnly(std::string accessName, il2cpp::Il2CppImage* img, const char* namespaze, const char* name) {
+    return classes["fallback"];
+}
+
+ClassCache* GetClassPtr(std::string accessName) {
+    if (classes.contains(accessName)) {
+        return &classes[accessName];
+    }
+
+    MYO_LOG("HermesUtils", "Could not find ClassCache with access name {}", accessName);
+
+    return nullptr;
+}
+
+ClassCache RegisterClassOnly(std::string accessName, il2cpp::Il2CppImage* img, const char* namespaze, const char* name) {
+    il2cpp::Il2CppClass* klass = il2cpp::class_from_name(img, namespaze, name);
+    if (!klass) {
+        MYO_LOG("HermesUtils", "Class of {}.{}, with access name {} does not exist", namespaze, name, accessName);
+        return {};
+    }
     classes[accessName] = ClassCache(
-        il2cpp::class_from_name(img, namespaze, name),
+        klass,
+        il2cpp::class_is_valuetype(klass),
+        {},
+        {}
+    );
+
+    return classes[accessName];
+}
+
+ClassCache RegisterClassOnly(il2cpp::Il2CppClass* klass, std::string accessName) {
+    if (!klass) {
+        MYO_LOG("HermesUtils", "Class with access name {} does not exist", accessName);
+        return {};
+    }
+    classes[accessName] = ClassCache(
+        klass,
+        il2cpp::class_is_valuetype(klass),
+        {},
+        {}
+    );
+
+    return classes[accessName];
+}
+
+ClassCache* RegisterClassOnlyPtr(std::string accessName, il2cpp::Il2CppImage* img, const char* namespaze, const char* name) {
+    il2cpp::Il2CppClass* klass = il2cpp::class_from_name(img, namespaze, name);
+    if (!klass) {
+        MYO_LOG("HermesUtils", "Class of {}.{}, with access name {} does not exist", namespaze, name, accessName);
+        return nullptr;
+    }
+    classes[accessName] = ClassCache(
+        klass,
+        il2cpp::class_is_valuetype(klass),
+        {},
+        {}
+    );
+
+    return &(classes[accessName]);
+}
+
+ClassCache* RegisterClassOnlyPtr(il2cpp::Il2CppClass* klass, std::string accessName) {
+    if (!klass) {
+        MYO_LOG("HermesUtils", "Class with access name {} does not exist", accessName);
+        return nullptr;
+    }
+    classes[accessName] = ClassCache(
+        klass,
+        il2cpp::class_is_valuetype(klass),
+        {},
         {}
     );
 
@@ -62,12 +133,68 @@ ClassCache* RegisterClassOnly(std::string accessName, il2cpp::Il2CppImage* img, 
 }
 
 ClassCache RegisterClassFull(std::string accessName, il2cpp::Il2CppImage* img, const char* namespaze, const char* name) {
-    ClassCache* classCache = RegisterClassOnly(accessName, img, namespaze, name);
+    ClassCache* classCache = RegisterClassOnlyPtr(accessName, img, namespaze, name);
+    if (!classCache) {
+        MYO_LOG("HermesUtils", "Could not register class fully");
+        return ClassCache();
+    }
     int totalMethods = 0; int totalFields = 0;
     RegisterAllMethods(*classCache, totalMethods);
     RegisterAllFields(*classCache, totalFields);
     MYO_LOG("HermesUtils", "Registered Class {}, Access Name: {}, Methods: {}, Fields: {}", name, accessName, totalMethods, totalFields);
     return *classCache;
+}
+
+ClassCache RegisterClassFull(il2cpp::Il2CppClass* klass, std::string accessName) {
+    ClassCache* classCache = RegisterClassOnlyPtr(klass, accessName);
+    if (!classCache) {
+        MYO_LOG("HermesUtils", "Could not register class fully");
+        return ClassCache();
+    }
+    int totalMethods = 0; int totalFields = 0;
+    RegisterAllMethods(*classCache, totalMethods);
+    RegisterAllFields(*classCache, totalFields);
+    MYO_LOG("HermesUtils", "Access Name: {}, Methods: {}, Fields: {}", accessName, totalMethods, totalFields);
+    return *classCache;
+}
+
+// Too lazy to implement this right now
+void RegisterMethod(std::string className, const char* methodName, int argsCount, int index) {
+    if (!classes.contains(className)) {
+        MYO_LOG("HermesUtils", "Could not find className of {}", className);
+    }
+
+
+    ClassCache* classC = GetClassPtr(className);
+    std::string accessName = methodName;
+    il2cpp::Il2CppMethod* method = nullptr;
+    if (index == 0) {
+        method = il2cpp::class_get_method_from_name(classC->klass, methodName, argsCount);
+        if (classC->methods.contains(accessName)) accessName = std::format("{}_P{}", accessName, argsCount);
+        if (classC->methods.contains(accessName)) accessName = std::format("{}I{}", accessName, index);
+        classC->methods[accessName] = method;
+    } else {
+        ClassCache* classC = GetClassPtr(className);
+        int mIndex = 0;
+        int currentIndex = 0;
+        void* mIter = nullptr;
+        while (auto* m = il2cpp::class_get_methods(classC->klass, &mIter)) {
+            const char* mName = il2cpp::method_get_name(m);
+            std::string mNameStr = mName;
+            if (mNameStr == methodName) {
+                if (currentIndex == index) {
+                    
+                }
+                currentIndex++;
+            }
+        }   
+            
+    }
+
+
+}
+void RegisterField(std::string className, const char* fieldName) {
+
 }
 
 void CheckForSameParamDuplicates(std::unordered_map<std::string, il2cpp::Il2CppMethod*> &methods, std::unordered_map<std::string, int> &dupeSameParamMethods, std::string key, il2cpp::Il2CppMethod* method) {
@@ -172,7 +299,7 @@ std::string unbox_string(il2cpp::Il2CppObject* obj) {
     
     // Get the length of the string
     int length = il2cpp::string_length(il2cppStr);
-    // MYO_LOG("testmod", "length = {}", length);
+    MYO_LOG("HermesUtils", "length = {}", length);
     if (length == 0) return "";
 
     // auto charstest = il2cpp::string_chars(il2cppStr);
@@ -274,6 +401,65 @@ std::string GetFieldInObjStr(il2cpp::Il2CppObject* obj, il2cpp::Il2CppObject* ob
     il2cpp::Il2CppObject* getObj = nullptr;
     il2cpp::field_get_value(obj, objField, &getObj);
     return unbox_string(getObj);
+}
+
+il2cpp::Il2CppMethod* InflateGenericMethod(il2cpp::Il2CppMethod* genericMethod, const std::vector<il2cpp::Il2CppClass*>& genericArguments) {
+    // Get the managed reflection method.
+    il2cpp::Il2CppObject* reflectionMethod =
+        il2cpp::method_get_object(genericMethod, nullptr);
+
+    // Resolve System.Type.
+    ClassCache& SystemType = GetClassRef("System.Type");
+    il2cpp::Il2CppClass* systemTypeClass = SystemType.klass;
+        /* Resolve System.Type */;
+
+    // Populate generic arguments.
+    std::vector<il2cpp::Il2CppObject*> typeObjects;
+
+    for (il2cpp::Il2CppClass* genericArgument : genericArguments) {
+        typeObjects.push_back(
+            il2cpp::type_get_object(
+                il2cpp::class_get_type(genericArgument)
+            )
+        );
+    }
+
+    il2cpp::Il2CppArray* typeArgs = il2cpp::array_new(systemTypeClass, typeObjects.size());
+    SetArrayElements(typeArgs, typeObjects, 0x20);
+
+    // Resolve MethodInfo.MakeGenericMethod(Type[]).
+    ClassCache& methodInfoClassC = GetClassRef("Reflection.MethodInfo");
+    il2cpp::Il2CppObject* constructedMethod = methodInfoClassC.Invoke("MakeGenericMethod", reflectionMethod, typeArgs);
+
+    if (!constructedMethod) {
+        MYO_LOG("HermesUtils", "Method unsuccesfully constructed");
+        return nullptr;
+    }
+
+    // Convert back to native method metadata.
+    il2cpp::Il2CppMethod* inflatedMethod = il2cpp::method_get_from_reflection(constructedMethod);
+    MYO_LOG("HermesUtils", "Method {} successfully inflated", il2cpp::method_get_name(inflatedMethod));
+    return inflatedMethod;
+}
+
+void init_utils(il2cpp::Il2CppAssembly** asms) {
+    classes["fallback"] = {};
+
+    const int ASSEMBLY_C_SHARP_INDEX = 0; 
+    const int MSCORLIB_INDEX = 1;
+    const int UNITYCORE_INDEX = 3;
+    const int JSON_INDEX = 18;
+    const int UNITYUI_INDEX = 22;
+    il2cpp::Il2CppImage* img = il2cpp::assembly_get_image(asms[ASSEMBLY_C_SHARP_INDEX]); 
+    il2cpp::Il2CppImage* mscorlibImg = il2cpp::assembly_get_image(asms[MSCORLIB_INDEX]); 
+    il2cpp::Il2CppImage* unityCoreImg = il2cpp::assembly_get_image(asms[UNITYCORE_INDEX]); 
+    il2cpp::Il2CppImage* jsonImg = il2cpp::assembly_get_image(asms[JSON_INDEX]);
+    il2cpp::Il2CppImage* unityUIImg = il2cpp::assembly_get_image(asms[UNITYUI_INDEX]);
+
+    RegisterClassFull("System.Type", mscorlibImg, "System", "Type");
+    ClassCache ReflectionMethodInfo = RegisterClassFull("Reflection.MethodInfo", mscorlibImg, "System.Reflection", "RuntimeMethodInfo");
+    // MakeGenericMethodObj = il2cpp::object_new(ReflectionMethodInfo.klass);
+    // ReflectionMethodInfo.Invoke(".ctor", MakeGenericMethodObj);
 }
 
 }

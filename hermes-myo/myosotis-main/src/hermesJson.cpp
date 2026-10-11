@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include <unordered_set>
 
 
 
@@ -14,6 +15,8 @@ namespace myosotis::testmod {
 
 BaseMethod1Void original_StringStaticDataJson_ctor = nullptr;
 BaseMethod1Void original_StringStaticDataJson_AddData = nullptr;
+
+// std::unordered_set<std::string> validDataClasses 
 
 void hooked_StringStaticDataJson_AddData(il2cpp::Il2CppObject* __this, void* text) {
     original_StringStaticDataJson_AddData(__this, text);
@@ -29,19 +32,21 @@ void hooked_StringStaticDataJson_ctor(il2cpp::Il2CppObject* __this, void* dataCl
     std::string dataClassStr = unbox_string(il2cpp::runtime_invoke(stringStaticDataJson_GetDataClass, __this, nullptr, nullptr));
     int32_t count = unbox<int32_t>(il2cpp::runtime_invoke(stringStaticDataJson_GetCount, __this, nullptr, nullptr));
 
-    if (dataClassStr == "personality") {
-        std::ifstream file("hermesMod/data/personality.json");
-        if (!file.is_open()) MYO_LOG("testmod", "Failed to open file. Oops!");
+    std::string filePath = std::format("hermesMod/data/{}.json", dataClassStr);
 
-        // Read all characters into a stringstream buffer
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        std::string jsonStr = buffer.str();
-
-        hooked_StringStaticDataJson_AddData(__this, ToIl2CppStr(jsonStr.c_str()));
-        MYO_LOG("testmod", "data class: {}, count: {}", dataClassStr, count);
-
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        MYO_LOG("HermesJson", "File does not exist for {} static data. YET!", dataClassStr);
+        return;
     }
+    
+    // Read all characters into a stringstream buffer
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string jsonStr = buffer.str();
+
+    hooked_StringStaticDataJson_AddData(__this, ToIl2CppStr(jsonStr.c_str()));
+    MYO_LOG("HermesJson", "data class: {}, count: {}", dataClassStr, count);
 }
 void init_json(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::Il2CppImage* jsonImg) {
     // init lists
@@ -75,15 +80,14 @@ void init_json(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::Il2CppIm
     // if (!csJsonNodeList_Add) MYO_LOG("testmod", "csJsonNodeList_Add not existt");
     // if (!csJsonNodeList_getItem) MYO_LOG("testmod", "csJsonNodeList_getItem not existt");
     // if (!csJsonNodeList_getCount) MYO_LOG("testmod", "csJsonNodeList_getCount not existt");
-
-    MYO_LOG("testmod", "eee");
-    
     // init JSON node (the world is pain and suffering)
     
     il2cpp::Il2CppClass* getJsonNodeClass = il2cpp::class_from_name(img, namespaze, "LoginModel");
     il2cpp::Il2CppMethod* getJsonNodeMethod = il2cpp::class_get_method_from_name(getJsonNodeClass, "GetJsonData", 0);
     il2cpp::Il2CppType* jsonNodeType = il2cpp::method_get_return_type(getJsonNodeMethod);
     jsonNodeClass = il2cpp::class_from_type(jsonNodeType);
+
+    
     jsonNode_Parse = il2cpp::class_get_method_from_name(jsonNodeClass, "Parse", 1);
     jsonNode_Add1 = il2cpp::class_get_method_from_name(jsonNodeClass, "Add", 1);
     jsonNode_Add2 = il2cpp::class_get_method_from_name(jsonNodeClass, "Add", 2);
@@ -104,11 +108,9 @@ void init_json(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::Il2CppIm
         if (mIndex == 5) {
             jsonNode_getItemIndex = m;
             const char* mpn = il2cpp::method_get_name(m);
-            MYO_LOG("testmod", "m = {}", mpn);
         } else if (mIndex == 9) {
             jsonNode_getCount = m;
             const char* mpn = il2cpp::method_get_name(m);
-            MYO_LOG("testmod", "m = {}", mpn);
         }
 
         mIndex++;
@@ -120,11 +122,7 @@ void init_json(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::Il2CppIm
         if (mIndex == 5) {
             jsonNode_getItemKey = m;
             const char* mpn = il2cpp::method_get_name(m);
-            MYO_LOG("testmod", "m = {}", mpn);
         }
-
-        
-
         mIndex++;
     }
 
@@ -134,6 +132,14 @@ void init_json(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::Il2CppIm
     // INIT JSON SERIALIZER
     jsonSerializerClass = il2cpp::class_from_name(jsonImg, "System.Text.Json", "JsonSerializer");
     jsonSerializer_Serialize = il2cpp::class_get_method_from_name(jsonSerializerClass, "Serialize", 2);
+
+    RegisterClassFull(jsonNodeClass, "JsonNode");
+    RegisterClassFull(jsonArrayClass, "JsonArray");
+    RegisterClassFull(jsonObjectClass, "JsonObject");
+    RegisterClassFull(jsonSerializerClass, "JsonSerializer");
+    RegisterClassFull("JsonNumber", img, "SimpleJSON", "JSONNumber");
+    RegisterClassFull("JsonBoolean", img, "SimpleJSON", "JSONBool");
+    RegisterClassFull("JsonString", img, "SimpleJSON", "JSONString");
 }
 
 }

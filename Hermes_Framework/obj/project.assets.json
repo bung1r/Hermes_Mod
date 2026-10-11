@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Framework\\Hermes_Framework.csproj",
+      "projectUniqueName": "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Framework\\Hermes_Framework.csproj",
       "projectName": "Hermes_Framework",
-      "projectPath": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Framework\\Hermes_Framework.csproj",
+      "projectPath": "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Framework\\Hermes_Framework.csproj",
       "packagesPath": "C:\\Users\\lamtr\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Framework\\obj\\",
+      "outputPath": "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Framework\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\lamtr\\AppData\\Roaming\\NuGet\\NuGet.Config"

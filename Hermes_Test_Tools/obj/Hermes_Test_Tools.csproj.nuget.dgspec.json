@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Test_Tools\\Hermes_Test_Tools.csproj": {}
+    "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Test_Tools\\Hermes_Test_Tools.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Test_Tools\\Hermes_Test_Tools.csproj": {
+    "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Test_Tools\\Hermes_Test_Tools.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Test_Tools\\Hermes_Test_Tools.csproj",
+        "projectUniqueName": "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Test_Tools\\Hermes_Test_Tools.csproj",
         "projectName": "Hermes_Test_Tools",
-        "projectPath": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Test_Tools\\Hermes_Test_Tools.csproj",
+        "projectPath": "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Test_Tools\\Hermes_Test_Tools.csproj",
         "packagesPath": "C:\\Users\\lamtr\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lamtr\\Hermes_Test\\Hermes_Test_Tools\\obj\\",
+        "outputPath": "C:\\Users\\lamtr\\Hermes_Mod\\Hermes_Test_Tools\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\lamtr\\AppData\\Roaming\\NuGet\\NuGet.Config"
