@@ -55,6 +55,12 @@ il2cpp::Il2CppObject* hooked_TextDataConverter_GetLocalInitializer(il2cpp::Il2Cp
 using GetLocalInitializer = il2cpp::Il2CppObject*(*)(il2cpp::Il2CppObject*, il2cpp::Il2CppObject*, il2cpp::Il2CppObject*, il2cpp::Il2CppObject*);
 inline GetLocalInitializer original_TextDataConverter_GetCustomInitializer = nullptr;
 
+//System.Collections.Generic.List<System.String> GetJsonFilePathList(System.Collections.Generic.List<System.String> dataList, System.String subFolderPath, LOCALIZE_LANGUAGE lang, System.Boolean isCustomFont) {}
+il2cpp::Il2CppObject* hooked_TextDataConverter_GetJsonFilePathList(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* a, il2cpp::Il2CppString* b, int32_t c, bool d);
+using GetJsonFilePathListFn = il2cpp::Il2CppObject*(*)(il2cpp::Il2CppObject*, il2cpp::Il2CppObject*, il2cpp::Il2CppString*, int32_t, bool);
+inline GetJsonFilePathListFn original_TextDataConverter_GetJsonFilePathList;
+
+
 
 
 using ConverterGetLocalInitFn = il2cpp::Il2CppObject*(*)(il2cpp::Il2CppObject*, il2cpp::Il2CppString*, il2cpp::Il2CppObject*, il2cpp::Il2CppString*);
@@ -62,5 +68,8 @@ il2cpp::Il2CppObject* hooked_ctorQuick(il2cpp::Il2CppObject* __this);
 inline ConverterGetLocalInitFn original_IConverter_GetLocalInit = nullptr;
 il2cpp::Il2CppObject* hooked_IConverter_GetLocalInitializer(il2cpp::Il2CppObject* __this, il2cpp::Il2CppString* localizeFolderPath, il2cpp::Il2CppObject* list, il2cpp::Il2CppString* lang);
 void init_localization(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::Il2CppImage* mscorlibImg);
+
+//System.Collections.Generic.List<System.String> GetJsonFilePathList(System.Collections.Generic.List<System.String> dataList, System.String subFolderPath, LOCALIZE_LANGUAGE lang, System.Boolean isCustomFont) {}
+
 
 }

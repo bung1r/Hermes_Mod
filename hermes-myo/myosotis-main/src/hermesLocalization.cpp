@@ -115,6 +115,26 @@ void hooked_JsonDataListPersonality_ctor(il2cpp::Il2CppObject* __this) {
     
     if (objType == jsonDataListPersonalityType) {
         init_unity_main_thread(); // stupidest shit i've ever done btw. 
+        ClassCache& IConverterUtils = GetClassRef("IConverterUtils");
+        ClassCache& TextData_Personality = GetClassRef("TextData_Personality");
+
+        il2cpp::Il2CppMethod* GetLocal_TextDataPersonality = InflateGenericMethod(
+        IConverterUtils.GetMethod("GetLocalJsonPath"),  {TextData_Personality.klass});
+        IConverterUtils.AddMethod(GetLocal_TextDataPersonality, "GetLocal_TextDataPersonality");
+        MYO_LOG("HermesLocal", "Inflated method return type: {}", type_name(il2cpp::method_get_return_type(GetLocal_TextDataPersonality)));
+        il2cpp::Il2CppObject* rootObj = nullptr;
+        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("Assets/Resources_moved/Localize/en/EN_Personalities.json"));
+        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
+        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("Personalities"));
+        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
+        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("diddy/ilovediddy/diddymansion"));
+        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
+        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("Limbus Company/LimbusCompany_Data/Assets/Resources_moved/Localize/en/EN_Personalities.json"));
+        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
+        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("C:/Program Files (x86)/Steam/steamapps/common/Limbus Company/LimbusCompany_Data/Assets/Resources_moved/Localize/en/EN_Personalities.json"));
+        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
+
+
     }
     // MYO_LOG("testmod", "successfully initialized JsonDataListPersonality");
     il2cpp::Il2CppObject* personalityDict = nullptr;
@@ -181,6 +201,39 @@ il2cpp::Il2CppObject* hooked_TextDataConverter_GetLocalInitializer(il2cpp::Il2Cp
     return original_TextDataConverter_GetCustomInitializer(__this, a, b, c);
 }
 
+il2cpp::Il2CppObject* hooked_TextDataConverter_GetJsonFilePathList(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* a, il2cpp::Il2CppString* b, int32_t c, bool d) {
+    MYO_LOG("HermesLocal", "this: {}, a: {}, b: {}, c: {}, d: {}", __this, a, b, c, d);
+    il2cpp::Il2CppObject* stringList = original_TextDataConverter_GetJsonFilePathList(__this, a, b, c, d);
+    ClassCache& StringListClass = GetClassRef("List_String");
+    int32_t listCount = StringListClass.InvokeUnbox<int32_t>("get_Count", a);
+    for (int32_t i = 0; i < listCount; i++) {
+        il2cpp::Il2CppString* strObj = StringListClass.Invoke("get_Item", a, &i);
+        std::string strStr = unbox_string(strObj);
+        MYO_LOG("HermesLocal", "String: {}", unbox_string(strObj));
+
+        if (strStr == "Personalities") {
+            StringListClass.Invoke("Add", stringList, ToIl2CppStr("C:/Program Files (x86)/Steam/steamapps/common/Limbus Company/hermesMod/localize/personality.json"));
+        }
+
+    }
+    
+    listCount = StringListClass.InvokeUnbox<int32_t>("get_Count", stringList);
+    for (int32_t i = 0; i < listCount; i++) {
+        il2cpp::Il2CppString* strObj = StringListClass.Invoke("get_Item", stringList, &i);
+        std::string strStr = unbox_string(strObj);
+        MYO_LOG("HermesLocal", "String: {}", unbox_string(strObj));
+
+        if (strStr == "Personalities") {
+            StringListClass.Invoke("Add", stringList, ToIl2CppStr("C:/Program Files (x86)/Steam/steamapps/common/Limbus Company/hermesMod/localize/personality.json"));
+        }
+
+    }
+
+
+    return stringList;
+}
+
+
 void init_localization(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::Il2CppImage* mscorlibImg) {
     // define all classes
     
@@ -223,10 +276,6 @@ void init_localization(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::
     );
 
     ClassCache TextDataConverter = RegisterClassFull("TextDataConverter", img, "TextLibrary", "TextDataConverter");
-    
-    
-    
-
     ClassCache LocalizeTextData = RegisterClassFull("LocalizeTextData", img, "", "LocalizeTextData");
     // original_TextDataConverter_ctor = 
     //     InstallHook<BaseMethod3String>(TextDataConverter.GetMethod(".ctor"), &hooked_TextDataConverter_ctor);
@@ -234,6 +283,9 @@ void init_localization(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::
         InstallHook<GetLocalInitializer>(TextDataConverter.GetMethod("GetLocalInitializer"), &hooked_TextDataConverter_GetLocalInitializer);
     original_TextDataConverter_GetCustomLocals = 
         InstallHook<GetCustomLocals>(TextDataConverter.GetMethod("GetCustomLocals"), &hooked_TextDataConverter_GetCustomLocals);
+    original_TextDataConverter_GetJsonFilePathList = 
+        InstallHook<GetJsonFilePathListFn>(TextDataConverter.GetMethod("GetJsonFilePathList"), &hooked_TextDataConverter_GetJsonFilePathList);
+
     ClassCache TextData_Personality = RegisterClassFull("TextData_Personality", img, "", "TextData_Personality");
     ClassCache TextData_EGO = RegisterClassFull("TextData_Ego", img, "", "TextData_Ego");
     ClassCache TextData_Enemy = RegisterClassFull("TextData_Enemy", img, "", "TextData_Enemy");
@@ -243,10 +295,9 @@ void init_localization(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::
     ClassCache TextData_Skill_CoinDesc = RegisterClassFull("TextData_Skill_CoinDesc", img, "", "TextData_Skill_CoinDesc");
 
     ClassCache IConverterUtils = RegisterClassFull("IConverterUtils", img, "TextLibrary", "IConverterUtils");
-    il2cpp::Il2CppMethod* GetLocal_TextDataPersonality = InflateGenericMethod(
-        IConverterUtils.GetMethod("GetLocalJsonPath"),  {TextData_Personality.klass});
-    IConverterUtils.AddMethod(GetLocal_TextDataPersonality, "GetLocal_TextDataPersonality");
-    MYO_LOG("HermesLocal", "GetLocalInflatedMethod: {}", GetLocal_TextDataPersonality);
+    // IT WORKED! I LOVE INFLATION!
+    
+
 
     // ClassCache RomoteFileList = RegisterClassFull("RemoteLocalizeFileList", img, "", "RomoteLocalizeFileList");
 
