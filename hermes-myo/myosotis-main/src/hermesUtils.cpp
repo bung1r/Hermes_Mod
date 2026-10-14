@@ -299,7 +299,7 @@ std::string unbox_string(il2cpp::Il2CppObject* obj) {
     
     // Get the length of the string
     int length = il2cpp::string_length(il2cppStr);
-    MYO_LOG("HermesUtils", "length = {}", length);
+    // MYO_LOG("HermesUtils", "length = {}", length);
     if (length == 0) return "";
 
     // auto charstest = il2cpp::string_chars(il2cppStr);

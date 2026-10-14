@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <unordered_set>
 
-
+namespace fs = std::filesystem;
 
 namespace myosotis::testmod {
 
@@ -32,22 +32,35 @@ void hooked_StringStaticDataJson_ctor(il2cpp::Il2CppObject* __this, void* dataCl
     std::string dataClassStr = unbox_string(il2cpp::runtime_invoke(stringStaticDataJson_GetDataClass, __this, nullptr, nullptr));
     int32_t count = unbox<int32_t>(il2cpp::runtime_invoke(stringStaticDataJson_GetCount, __this, nullptr, nullptr));
 
-    std::string filePath = std::format("hermesMod/data/{}.json", dataClassStr);
+    ClassCache& StringListClass = GetClassRef("List_String");
 
-    std::ifstream file(filePath);
-    if (!file.is_open()) {
-        MYO_LOG("HermesJson", "File does not exist for {} static data. YET!", dataClassStr);
-        return;
+    std::string folderPath = std::format("C:/Program Files (x86)/Steam/steamapps/common/Limbus Company/hermesMod/data/{}", dataClassStr);
+    if (fs::exists(folderPath) && fs::is_directory(folderPath)) {
+        MYO_LOG("HermesLocal", "Iterating through directory {}", folderPath);
+        for (const auto& entry : fs::directory_iterator(folderPath)) {
+            // Filter to only display regular files (skip directories, symlinks, etc.)
+            if (fs::is_regular_file(entry.status()) && entry.path().extension().string() == ".json") {
+                std::string filePath = std::format("{}/{}", folderPath, entry.path().filename().string());
+                // StringListClass.Invoke("Add", stringList, ToIl2CppStr(filePath.c_str()));
+                std::ifstream file(filePath);
+                if (!file.is_open()) {
+                    MYO_LOG("HermesJson", "File does not exist for {} static data", dataClassStr);
+                    return;
+                }
+                
+                // Read all characters into a stringstream buffer
+                std::stringstream buffer;
+                buffer << file.rdbuf();
+                std::string jsonStr = buffer.str();
+                hooked_StringStaticDataJson_AddData(__this, ToIl2CppStr(jsonStr.c_str()));
+                MYO_LOG("HermesLocal", "Found file {} in directory", filePath);
+            }
+        } 
+    } else {   
+        MYO_LOG("HermesLocal", "Expected folder with name {}", dataClassStr);
     }
-    
-    // Read all characters into a stringstream buffer
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string jsonStr = buffer.str();
-
-    hooked_StringStaticDataJson_AddData(__this, ToIl2CppStr(jsonStr.c_str()));
-    MYO_LOG("HermesJson", "data class: {}, count: {}", dataClassStr, count);
 }
+
 void init_json(il2cpp::Il2CppImage* img, const char* namespaze, il2cpp::Il2CppImage* jsonImg) {
     // init lists
 

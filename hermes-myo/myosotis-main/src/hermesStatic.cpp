@@ -47,7 +47,7 @@ il2cpp::Il2CppObject* hooked_PlayerUnitSpriteList_GetNormalProfileSprite(il2cpp:
 il2cpp::Il2CppObject* hooked_PlayerUnitSpriteList_GetInfoSprite(il2cpp::Il2CppObject* __this, int32_t personalityId, bool gacksung) {
     il2cpp::Il2CppObject* returnGameObject = original_PlayerUnitSpriteList_GetInfoSprite(__this, personalityId, gacksung);
     
-    return CreateSpriteFromImg("hermesMod/assets/MoFullBody.png");
+    // return CreateSpriteFromImg("hermesMod/assets/MoFullBody.png");
     return returnGameObject;
 }
 il2cpp::Il2CppObject* hooked_PlayerUnitSpriteList_GetCGData(il2cpp::Il2CppObject* __this, int32_t personalityId, bool gacksung, il2cpp::Il2CppString* releaseKey) {

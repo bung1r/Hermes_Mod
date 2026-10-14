@@ -11,6 +11,7 @@
 #include <filesystem>
 
 
+namespace fs = std::filesystem;
 namespace myosotis::testmod {
 
 std::string extractLowerSuffix(const std::string& input)
@@ -202,19 +203,48 @@ il2cpp::Il2CppObject* hooked_TextDataConverter_GetLocalInitializer(il2cpp::Il2Cp
 }
 
 il2cpp::Il2CppObject* hooked_TextDataConverter_GetJsonFilePathList(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* a, il2cpp::Il2CppString* b, int32_t c, bool d) {
-    MYO_LOG("HermesLocal", "this: {}, a: {}, b: {}, c: {}, d: {}", __this, a, b, c, d);
+    MYO_LOG("HermesLocal", "this: {}, a: {}, b: {}, c: {}, d: {}", __this, a, unbox_string(b), c, d);
     il2cpp::Il2CppObject* stringList = original_TextDataConverter_GetJsonFilePathList(__this, a, b, c, d);
+
+    std::string lang = "";
+    if (c == 0) {
+        lang = "kr";
+    } else if (c== 1) {
+        lang = "en";
+    } else if (c == 2) {
+        lang = "jp";
+    } 
+
+    std::string languageFolder = std::format("C:/Program Files (x86)/Steam/steamapps/common/Limbus Company/hermesMod/Localize/{}", lang);
     ClassCache& StringListClass = GetClassRef("List_String");
     int32_t listCount = StringListClass.InvokeUnbox<int32_t>("get_Count", a);
+    if (listCount > 0) {
+        int32_t zero = 0;
+        il2cpp::Il2CppString* strObj = StringListClass.Invoke("get_Item", a, &zero);
+        std::string strStr = unbox_string(strObj);
+
+        // dynamically check folders and such
+        std::string localizeFolderPath = std::format("{}/{}", languageFolder, strStr);
+        if (fs::exists(localizeFolderPath) && fs::is_directory(localizeFolderPath)) {
+            // iterate through the directory for all files 
+            MYO_LOG("HermesLocal", "Iterating through directory {}", localizeFolderPath);
+            for (const auto& entry : fs::directory_iterator(localizeFolderPath)) {
+                // Filter to only display regular files (skip directories, symlinks, etc.)
+                if (fs::is_regular_file(entry.status()) && entry.path().extension().string() == ".json") {
+                    std::string filePath = std::format("{}/{}", localizeFolderPath, entry.path().filename().string());
+                    StringListClass.Invoke("Add", stringList, ToIl2CppStr(filePath.c_str()));
+                    MYO_LOG("HermesLocal", "Found file {} in directory", filePath);
+                }
+            }
+        } else {
+            MYO_LOG("HermesLocal", "Expected folder with name {} in {}", strStr, lang);
+        }
+    }
+
     for (int32_t i = 0; i < listCount; i++) {
         il2cpp::Il2CppString* strObj = StringListClass.Invoke("get_Item", a, &i);
         std::string strStr = unbox_string(strObj);
         MYO_LOG("HermesLocal", "String: {}", unbox_string(strObj));
-
-        if (strStr == "Personalities") {
-            StringListClass.Invoke("Add", stringList, ToIl2CppStr("C:/Program Files (x86)/Steam/steamapps/common/Limbus Company/hermesMod/localize/personality.json"));
-        }
-
     }
     
     listCount = StringListClass.InvokeUnbox<int32_t>("get_Count", stringList);
@@ -222,11 +252,6 @@ il2cpp::Il2CppObject* hooked_TextDataConverter_GetJsonFilePathList(il2cpp::Il2Cp
         il2cpp::Il2CppString* strObj = StringListClass.Invoke("get_Item", stringList, &i);
         std::string strStr = unbox_string(strObj);
         MYO_LOG("HermesLocal", "String: {}", unbox_string(strObj));
-
-        if (strStr == "Personalities") {
-            StringListClass.Invoke("Add", stringList, ToIl2CppStr("C:/Program Files (x86)/Steam/steamapps/common/Limbus Company/hermesMod/localize/personality.json"));
-        }
-
     }
 
 
