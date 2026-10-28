@@ -6,13 +6,18 @@
 #include "hook.hpp"
 #include "log.hpp"
 #include "hermesBuff.hpp"
+#include "passiveBase.hpp"
+#include "testmod.hpp"
 
 namespace myosotis::testmod {
 
 void ClearStageInfo() {
     playerBattleUnits.clear();
     opponentBattleUnits.clear();
+    // passiveMap.clear();
 }
+
+
 void AddBuffToAllEnemies(int32_t keyword, int32_t stack, int32_t count, int32_t activeRound, int32_t src, int32_t timing) {
     // enum ABILITY_SOURCE_TYPE
     // {
@@ -113,6 +118,8 @@ void hooked_StageController_ctor(il2cpp::Il2CppObject* __this) {
         return;
     }
     original_StageController_ctor(__this);
+    init_PassiveBase(mainImg);
+    
     MYO_LOG("testmod", "ctor successful");
 }
 void hooked_StageController_OnRoundStart(il2cpp::Il2CppObject* __this) {
@@ -161,6 +168,7 @@ void hooked_StageController_OnCompleteCommand(il2cpp::Il2CppObject* __this) {
 
 
 void init_stage_controller(il2cpp::Il2CppImage* img, const char* namespaze) {
+    ClassCache BattleUnitModel = RegisterClassFull("BattleUnitModel", img, "", "BattleUnitModel");
     il2cpp::Il2CppClass* stageControllerClass = il2cpp::class_from_name(img, namespaze, "StageController");
     
     // get fields

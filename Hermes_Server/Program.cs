@@ -129,7 +129,7 @@ string CANNED_SERVERINFOS = """
     "platform": "windows",
     "serviceType": "exam",
     "serverId": "win_exam",
-    "versions": ["1.116.2"],
+    "versions": ["1.117.0"],
     "serverUrl": "https://www.limbuscompanyapi-2.com",
     "logServerUrl": "https://battlelog.limbuscompanyapi-2.com",
     "noticeUrl": "https://notice.limbuscompanyapi-2.com",

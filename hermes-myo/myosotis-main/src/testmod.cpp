@@ -11,7 +11,8 @@
 #include "hermesBattleUnit.hpp"
 #include "hermesLocalization.hpp"
 #include "hermesUnity.hpp"
-
+#include "passiveBase.hpp"
+#include "MinHook.h"
 #include <windows.h>
 #include <string>
 #include <string_view>
@@ -22,6 +23,7 @@
 #include <sstream>
 #include <filesystem>
 #include <vector>
+
 
 
 namespace myosotis::testmod {
@@ -150,9 +152,14 @@ void init_all() {
     const char* jsonImg_name = il2cpp::image_get_name(jsonImg);
     MYO_LOG("testmod", "Test Mod has loaded {}, {}!", img_name, jsonImg_name); 
 
+    mainImg = img;
 
     // MYO_LOG("testmod", "{} successfully loaded.", classname); 
     const char* namespaze = ""; 
+
+
+    MH_STATUS status = MH_Initialize();
+    
 
     // initialize the necessary stuffs
     init_coin_model(img, namespaze);
@@ -165,6 +172,9 @@ void init_all() {
     init_battle_models(img, namespaze);
     init_buff_stuff(img, namespaze);
     init_unity_objects(img, namespaze, unityCoreImg, mscorlibImg, unityUIImg);
+    init_PassiveBase(img);
+    // 
+    
 
     std::filesystem::path my_path = std::filesystem::current_path();
     std::string path_string = my_path.string();     

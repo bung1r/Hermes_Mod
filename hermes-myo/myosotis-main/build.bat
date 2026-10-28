@@ -17,6 +17,7 @@ set INC=-Iinclude -Igenerated
 set DEF=-DUNICODE -D_UNICODE
 set WARN=-Wall -Wextra -Wpedantic -Wconversion -Wshadow -Wdouble-promotion -Wformat=2 -Wcast-align -Wnull-dereference -Wswitch-enum
 set OPT=-target x86_64-windows-gnu -O3 -std=c++23 %WARN% %INC% %DEF%
+set COPT=-target x86_64-windows-gnu -O3 -Iinclude -Igenerated -Isrc -Isrc\hde %DEF%
 
 set WHAT=%1
 if "%WHAT%"=="" set WHAT=all
@@ -40,7 +41,26 @@ if /i "%WHAT%"=="all" (
 )
 exit /b 2
 
+:build_minhook
+if not exist build\minhook mkdir build\minhook
+
+%ZIG% cc %COPT% -c src\buffer.c -o build\minhook\buffer.o
+if errorlevel 1 exit /b 1
+
+%ZIG% cc %COPT% -c src\hook.c -o build\minhook\hook.o
+if errorlevel 1 exit /b 1
+
+%ZIG% cc %COPT% -c src\trampoline.c -o build\minhook\trampoline.o
+if errorlevel 1 exit /b 1
+
+%ZIG% cc %COPT% -c src\hde\hde64.c -o build\minhook\hde64.o
+if errorlevel 1 exit /b 1
+
+exit /b 0
+
 :build_dll
+call :build_minhook
+if errorlevel 1 exit /b 1
 set SRC=^
 src\dllmain.cpp ^
 src\init.cpp ^
@@ -57,6 +77,9 @@ src\hermesStage.cpp ^
 src\hermesStatic.cpp ^
 src\hermesUnity.cpp ^
 src\hermesUtils.cpp ^
+src\custom-passives\passiveBase.cpp ^
+src\custom-passives\passiveDetail.cpp ^
+src\custom-passives\moPassives.cpp ^
 src\stb_image.cpp ^
 src\il2cpp\pe.cpp ^
 src\il2cpp\scan.cpp ^
@@ -66,7 +89,11 @@ src\patches\guard.cpp ^
 src\patches\login.cpp ^
 src\patches\http.cpp ^
 src\patches\request.cpp 
-%ZIG% c++ %OPT% -shared %SRC% -lwinhttp -lkernel32 -luser32 -lole32 -ladvapi32 -o build\myosotis.dll
+%ZIG% c++ %OPT% -shared %SRC% ^
+    build\minhook\buffer.o ^
+    build\minhook\hook.o ^
+    build\minhook\trampoline.o ^
+    build\minhook\hde64.o ^ -lwinhttp -lkernel32 -luser32 -lole32 -ladvapi32 -o build\myosotis.dll
 if errorlevel 1 ( echo DLL BUILD FAILED & exit /b 1 )
 echo built build\myosotis.dll
 exit /b 0

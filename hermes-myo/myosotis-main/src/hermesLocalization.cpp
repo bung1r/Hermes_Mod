@@ -3,6 +3,8 @@
 #include "hermesStatic.hpp"
 #include "hermesUtils.hpp"
 #include "hermesUnity.hpp"
+#include "testmod.hpp"
+#include "passiveBase.hpp"
 #include "hook.hpp"
 #include "log.hpp"
 #include <algorithm>
@@ -115,7 +117,9 @@ void hooked_JsonDataListPersonality_ctor(il2cpp::Il2CppObject* __this) {
     il2cpp::Il2CppType* objType = il2cpp::class_get_type(il2cpp::object_get_class(__this));
     
     if (objType == jsonDataListPersonalityType) {
+        // init_PassiveBase(mainImg);
         init_unity_main_thread(); // stupidest shit i've ever done btw. 
+        
         ClassCache& IConverterUtils = GetClassRef("IConverterUtils");
         ClassCache& TextData_Personality = GetClassRef("TextData_Personality");
 

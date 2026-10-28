@@ -35,6 +35,8 @@ namespace myosotis::hook {
 // prefix-only and don't call the original.
 void* install_inline(::myosotis::il2cpp::Il2CppMethod* method, void* new_ptr);
 
+void* install_inline_2(::myosotis::il2cpp::Il2CppMethod* method, void* new_ptr);
+
  // Uninstall (restore original). `original` is the value returned by install().
 
 }  // namespace myosotis::hook

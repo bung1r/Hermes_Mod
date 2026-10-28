@@ -1,12 +1,24 @@
 // Method-pointer hook implementation.
 #include "hook.hpp"
 #include "log.hpp"
+#include <MinHook.h>
+#include <mutex>
 #include <windows.h>
 #include <cstring>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace myosotis::hook {
 
 namespace {
+
+std::once_flag g_mh_init_flag;
+MH_STATUS g_mh_init_status = MH_UNKNOWN;
+std::unordered_map<
+    ::myosotis::il2cpp::Il2CppMethod*,
+    void*
+> g_targets;
+
 // MethodInfo layout we depend on: methodPointer at offset 0.
 // (Matches the real Il2CppMethodInfo for Unity 2021+; offset 0 is `methodPointer`,
 //  an Il2CppMethodPointer / void*.)
@@ -201,21 +213,28 @@ size_t insn_len(const uint8_t* p) {
 
 // Allocate a page of executable memory for trampolines. We keep a single
 // page and bump-allocate trampolines from it.
-uint8_t* g_trampoline_page = nullptr;
-size_t g_trampoline_offset = 0;
+// Executable memory for trampolines. Chunks are never freed: trampolines
+// live for as long as their hook does.
+constexpr size_t kChunkSize = 64 * 1024;   // matches VirtualAlloc granularity
+uint8_t* g_chunk = nullptr;
+size_t   g_chunk_used = 0;
+
 uint8_t* alloc_trampoline(size_t size) {
-    if (!g_trampoline_page) {
-        g_trampoline_page = static_cast<uint8_t*>(
-            VirtualAlloc(nullptr, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE));
-        if (!g_trampoline_page) {
+    size = (size + 15) & ~static_cast<size_t>(15);   // keep trampolines 16-byte aligned
+    if (size > kChunkSize) return nullptr;
+
+    if (!g_chunk || g_chunk_used + size > kChunkSize) {
+        void* mem = VirtualAlloc(nullptr, kChunkSize,
+                                 MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+        if (!mem) {
             MYO_LOG("hook", "trampoline VirtualAlloc failed: {}", GetLastError());
             return nullptr;
         }
-        g_trampoline_offset = 0;
+        g_chunk = static_cast<uint8_t*>(mem);   // old chunk stays alive, still in use
+        g_chunk_used = 0;
     }
-    if (g_trampoline_offset + size > 4096) return nullptr;
-    uint8_t* p = g_trampoline_page + g_trampoline_offset;
-    g_trampoline_offset += size;
+    uint8_t* p = g_chunk + g_chunk_used;
+    g_chunk_used += size;
     return p;
 }
 
@@ -226,7 +245,18 @@ uint8_t* alloc_trampoline(size_t size) {
 // to original+N) so hooks that need the original can call through. If the
 // trampoline can't be built safely (instruction boundaries don't align), falls
 // back to methodPointer-only and returns the original methodPointer.
+
+// std::unordered_map<void*, int> g_bodyUse;   // filled once at startup (scan from my earlier message)
+// std::unordered_set<void*> g_patched;
+
 void* install_inline(::myosotis::il2cpp::Il2CppMethod* method, void* new_ptr) {
+    // void* body = *reinterpret_cast<void**>(method);
+    // if (g_bodyUse[body] > 1 || g_patched.count(body)) {
+    //     MYO_LOG("hook", "SKIP {}: body {} shared by {} methods", (void*)method, body, g_bodyUse[body]);
+    //     return body;      // unpatched real body: safe to call as 'original', but no hook installed
+    // }
+    // g_patched.insert(body);
+
     if (!method || !new_ptr) {
         MYO_LOG("hook", "Method or new ptr null, {} and {}", method, new_ptr);
         return nullptr;
@@ -304,6 +334,61 @@ void* install_inline(::myosotis::il2cpp::Il2CppMethod* method, void* new_ptr) {
              patch_size, static_cast<void*>(tramp), copied);
     return tramp;
 }
+
+void* install_inline_2(::myosotis::il2cpp::Il2CppMethod* method, void* new_ptr) {
+    // void* body = *reinterpret_cast<void**>(method);
+    // if (g_bodyUse[body] > 1 || g_patched.count(body)) {
+    //     MYO_LOG("hook", "SKIP {}: body {} shared by {} methods", (void*)method, body, g_bodyUse[body]);
+    //     return body;      // unpatched real body: safe to call as 'original', but no hook installed
+    // }
+    // g_patched.insert(body);
+    if (!method || !new_ptr) {
+        MYO_LOG("hook", "Method or replacement pointer is null");
+        return nullptr;
+    }
+
+    // Your current implementation assumes methodPointer is at offset 0.
+    void* target = *reinterpret_cast<void**>(method);
+
+    if (!target) {
+        MYO_LOG("hook", "Native method pointer is null");
+        return nullptr;
+    }
+
+    void* original = nullptr;
+
+    MH_STATUS status = MH_CreateHook(
+        target,
+        new_ptr,
+        &original
+    );
+
+    if (status != MH_OK) {
+        MYO_LOG("hook", "MH_CreateHook failed: {}",
+                static_cast<int>(status));
+        return nullptr;
+    }
+
+    status = MH_EnableHook(target);
+
+    if (status != MH_OK) {
+        MH_RemoveHook(target);
+
+        MYO_LOG("hook", "MH_EnableHook failed: {}",
+                static_cast<int>(status));
+        return nullptr;
+    }
+
+    g_targets[method] = target;
+
+    MYO_LOG("hook", "Installed: {} -> {} (original: {})",
+            target, new_ptr, original);
+
+    // This is MinHook's trampoline to the original implementation.
+    return original;
+}
+
+
 
 void uninstall(::myosotis::il2cpp::Il2CppMethod* method, void* original) {
     if (!method || !original) return;

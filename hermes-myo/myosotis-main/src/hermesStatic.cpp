@@ -121,14 +121,14 @@ void init_static(il2cpp::Il2CppImage* img, const char* namespaze) {
     playerUnitSpriteList_GetCGData = il2cpp::class_get_method_from_name(playerUnitSpriteListClass, "GetCGData", 3);
     playerUnitSpriteList_SetCGData = il2cpp::class_get_method_from_name(playerUnitSpriteListClass, "SetCGData", 7);
     
-    original_PlayerUnitSpriteList_GetNormalProfileSprite = reinterpret_cast<playerUnitSpriteListGetNormalProfileSprite>(
-        hook::install_inline(playerUnitSpriteList_GetNormalProfileSprite, reinterpret_cast<void*>(&hooked_PlayerUnitSpriteList_GetNormalProfileSprite)));
-    original_PlayerUnitSpriteList_GetInfoSprite = reinterpret_cast<playerUnitSpriteListGetNormalProfileSprite>(
-        hook::install_inline(playerUnitSpriteList_GetInfoSprite, reinterpret_cast<void*>(&hooked_PlayerUnitSpriteList_GetInfoSprite)));
-    original_PlayerUnitSpriteList_GetCGData = reinterpret_cast<playerUnitSpriteListGetCGDataFn>(
-        hook::install_inline(playerUnitSpriteList_GetCGData, reinterpret_cast<void*>(&hooked_PlayerUnitSpriteList_GetCGData)));
-    original_PlayerUnitSpriteList_SetCGData = reinterpret_cast<playerUnitSpriteListSetCGDataFn>(
-        hook::install_inline(playerUnitSpriteList_SetCGData, reinterpret_cast<void*>(&hooked_PlayerUnitSpriteList_SetCGData)));
+    // original_PlayerUnitSpriteList_GetNormalProfileSprite = reinterpret_cast<playerUnitSpriteListGetNormalProfileSprite>(
+    //     hook::install_inline(playerUnitSpriteList_GetNormalProfileSprite, reinterpret_cast<void*>(&hooked_PlayerUnitSpriteList_GetNormalProfileSprite)));
+    // original_PlayerUnitSpriteList_GetInfoSprite = reinterpret_cast<playerUnitSpriteListGetNormalProfileSprite>(
+    //     hook::install_inline(playerUnitSpriteList_GetInfoSprite, reinterpret_cast<void*>(&hooked_PlayerUnitSpriteList_GetInfoSprite)));
+    // original_PlayerUnitSpriteList_GetCGData = reinterpret_cast<playerUnitSpriteListGetCGDataFn>(
+    //     hook::install_inline(playerUnitSpriteList_GetCGData, reinterpret_cast<void*>(&hooked_PlayerUnitSpriteList_GetCGData)));
+    // original_PlayerUnitSpriteList_SetCGData = reinterpret_cast<playerUnitSpriteListSetCGDataFn>(
+    //     hook::install_inline(playerUnitSpriteList_SetCGData, reinterpret_cast<void*>(&hooked_PlayerUnitSpriteList_SetCGData)));
 }
 
 }

@@ -27,6 +27,8 @@ inline BaseMethodType original_BuffDetail_ctor = nullptr;
 inline BuffDetailAddBuffFn original_BuffDetail_AddBuff = nullptr;
 inline BuffDetailAddBuffFn2 original_BuffDetail_AddBuff2 = nullptr;
 
+void AddBuff(il2cpp::Il2CppObject* unit, int32_t keyword, int32_t stack, int32_t count, int32_t activeRound, int32_t src, int32_t timing);
+
 void hooked_BuffDetail_ctor(il2cpp::Il2CppObject* __this);
 void hooked_BuffDetail_AddBuff(il2cpp::Il2CppObject* __this, void* unit, void* buffData, void* history, int32_t timing);
 void hooked_BuffDetail_AddBuff2(il2cpp::Il2CppObject* __this, void* unit, int32_t newKeyword, void* historyList, int32_t activeRound, int32_t abilitySrcType, int32_t timing, void* actionOrNull, int32_t* addedStack, int32_t* addedTurn, int32_t* overStack, int32_t* overTurn, bool mainKeywordOnly);
