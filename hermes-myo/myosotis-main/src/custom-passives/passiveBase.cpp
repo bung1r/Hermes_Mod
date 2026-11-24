@@ -3639,18 +3639,18 @@ bool hooked_PassiveBase_IsRunUniqueAction(il2cpp::Il2CppObject* __this, il2cpp::
 }
 
 
-int32_t hooked_BattleActionModel_GetExpectedOpponentParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult) {
-    int32_t value = original_BattleActionModel_GetExpectedOpponentParryingResultAdder(__this, actorResult, oppoActionOrNull, oppoResult);
-    MYO_LOG("PassiveBase", "GetExpectedOpponentParryingResultAdder {}", value);
-    return 50;
-}
+// int32_t hooked_BattleActionModel_GetExpectedOpponentParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult) {
+//     int32_t value = original_BattleActionModel_GetExpectedOpponentParryingResultAdder(__this, actorResult, oppoActionOrNull, oppoResult);
+//     MYO_LOG("PassiveBase", "GetExpectedOpponentParryingResultAdder {}", value);
+//     return 50;
+// }
 
-int32_t hooked_BattleActionModel_GetExpectedParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult) {
+// int32_t hooked_BattleActionModel_GetExpectedParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult) {
     
-    int32_t value = original_BattleActionModel_GetExpectedParryingResultAdder(__this, actorResult, oppoActionOrNull, oppoResult);
-    MYO_LOG("PassiveBase", "GetExpectedParryingResultAdder {}", value);
-    return 50;
-}
+//     int32_t value = original_BattleActionModel_GetExpectedParryingResultAdder(__this, actorResult, oppoActionOrNull, oppoResult);
+//     MYO_LOG("PassiveBase", "GetExpectedParryingResultAdder {}", value);
+//     return 50;
+// }
 // C#: System.Void .ctor(BattleUnitModel model, UnitDataModel rawDataModel)
 void hooked_PassiveBase_ctor(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* model, il2cpp::Il2CppObject* rawDataModel) {
     // call the constructor first and foremost
@@ -3714,11 +3714,11 @@ void init_PassiveBase(il2cpp::Il2CppImage* img) {
     ClassCache List_PassiveModelC = RegisterClassFull(InflateGenericClass(GetClass("List").klass, {PassiveModelC.klass}), "List_PassiveModel");
     
 
-    ClassCache BattleActionModelC = RegisterClassFull("BattleActionModel", img, "", "BattleActionModel");
-    original_BattleActionModel_GetExpectedOpponentParryingResultAdder = 
-        InstallHook<BattleActionModelGetExpectedOpponentParryingResultAdderFn>(BattleActionModelC.GetMethod("GetExpectedOpponentParryingResultAdder"), &hooked_BattleActionModel_GetExpectedOpponentParryingResultAdder);
-    original_BattleActionModel_GetExpectedParryingResultAdder =
-        InstallHook<BattleActionModelGetExpectedParryingResultAdderFn>(BattleActionModelC.GetMethod("GetExpectedParryingResultAdder"), &hooked_BattleActionModel_GetExpectedParryingResultAdder);
+    // ClassCache BattleActionModelC = RegisterClassFull("BattleActionModel", img, "", "BattleActionModel");
+    // original_BattleActionModel_GetExpectedOpponentParryingResultAdder = 
+    //     InstallHook<BattleActionModelGetExpectedOpponentParryingResultAdderFn>(BattleActionModelC.GetMethod("GetExpectedOpponentParryingResultAdder"), &hooked_BattleActionModel_GetExpectedOpponentParryingResultAdder);
+    // original_BattleActionModel_GetExpectedParryingResultAdder =
+    //     InstallHook<BattleActionModelGetExpectedParryingResultAdderFn>(BattleActionModelC.GetMethod("GetExpectedParryingResultAdder"), &hooked_BattleActionModel_GetExpectedParryingResultAdder);
     hook::ONLY_LOG_HOOKS_ON_ERROR = true;
 
     

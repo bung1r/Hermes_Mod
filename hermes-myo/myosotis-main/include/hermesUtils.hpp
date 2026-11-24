@@ -277,11 +277,11 @@ il2cpp::Il2CppClass* InflateGenericClass(il2cpp::Il2CppClass* genericKlass, cons
 std::string GetFieldInObjStr(il2cpp::Il2CppObject* obj, il2cpp::Il2CppObject* objClass, const char* name);
 
 // All the IMGs, so we don't need to pass them through dumb params
-il2cpp::Il2CppImage* IMG_MAIN = nullptr;
-il2cpp::Il2CppImage* IMG_JSON = nullptr;
-il2cpp::Il2CppImage* IMG_UNITYCORE = nullptr;
-il2cpp::Il2CppImage* IMG_MSCORLIB = nullptr;
-il2cpp::Il2CppImage* IMG_UNITYUI = nullptr;
+inline il2cpp::Il2CppImage* IMG_MAIN = nullptr;
+inline il2cpp::Il2CppImage* IMG_JSON = nullptr;
+inline il2cpp::Il2CppImage* IMG_UNITYCORE = nullptr;
+inline il2cpp::Il2CppImage* IMG_MSCORLIB = nullptr;
+inline il2cpp::Il2CppImage* IMG_UNITYUI = nullptr;
 
 
 

@@ -2715,19 +2715,6 @@ using PassiveBasectorFn = void(*)(il2cpp::Il2CppObject*, il2cpp::Il2CppObject*, 
 inline PassiveBasectorFn original_PassiveBase_ctor = nullptr;
 void hooked_PassiveBase_ctor(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* model, il2cpp::Il2CppObject* rawDataModel);
 
-
-// System.Int32 GetExpectedParryingResultAdder(System.Int32 actorResult, BattleActionModel oppoActionOrNull, System.Int32 oppoResult) {}//
-
-using BattleActionModelGetExpectedParryingResultAdderFn = int32_t(*)(il2cpp::Il2CppObject*, int32_t, il2cpp::Il2CppObject*, int32_t);
-inline BattleActionModelGetExpectedParryingResultAdderFn original_BattleActionModel_GetExpectedParryingResultAdder = nullptr;
-int32_t hooked_BattleActionModel_GetExpectedParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult);
-
-// System.Int32 GetExpectedOpponentParryingResultAdder(System.Int32 actorResult, BattleActionModel oppoAction, System.Int32 oppoResult) {}//
-using BattleActionModelGetExpectedOpponentParryingResultAdderFn = int32_t(*)(il2cpp::Il2CppObject*, int32_t, il2cpp::Il2CppObject*, int32_t);
-inline BattleActionModelGetExpectedOpponentParryingResultAdderFn original_BattleActionModel_GetExpectedOpponentParryingResultAdder = nullptr;
-int32_t hooked_BattleActionModel_GetExpectedOpponentParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult);
-
-
 // System.Int32 GetCoinScaleAdder(BattleActionModel action, BattleActionModel oppoActionOrNull, CoinModel coin) {}//
 // System.Int32 GetExpectedCoinScaleAdder(BattleActionModel action, CoinModel coin, COIN_ROLL_TYPE rollType, SinActionModel targetSinActionOrNull) {}//
 } // myosotis::testmod
