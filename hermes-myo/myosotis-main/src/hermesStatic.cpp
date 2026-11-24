@@ -15,7 +15,7 @@ namespace myosotis::testmod {
 // injected into nodeList directly, call the original func after
 
 void hooked_PersonalityStaticDataList_Init(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* nodeList) {
-    MYO_LOG("testmod", "STEP 1 hooked_PersonalityStaticDataList_Init");
+    // MYO_LOG("testmod", "STEP 1 hooked_PersonalityStaticDataList_Init");
     
     // call the method, now with our modified json nodes. 
     original_PersonalityStaticDataList_Init(__this, nodeList);

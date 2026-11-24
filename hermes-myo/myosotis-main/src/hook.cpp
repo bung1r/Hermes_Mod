@@ -329,9 +329,11 @@ void* install_inline(::myosotis::il2cpp::Il2CppMethod* method, void* new_ptr) {
     DWORD dummy = 0;
     VirtualProtect(old_method_ptr, patch_size, old_prot, &dummy);
     FlushInstructionCache(GetCurrentProcess(), old_method_ptr, patch_size);
-    MYO_LOG_DEBUG("hook", "inline hooked {} at {} -> {} ({}-byte patch, trampoline={}, copied={})",
+    if (!ONLY_LOG_HOOKS_ON_ERROR) {
+        MYO_LOG_DEBUG("hook", "inline hooked {} at {} -> {} ({}-byte patch, trampoline={}, copied={})",
              static_cast<void*>(method), old_method_ptr, new_ptr,
              patch_size, static_cast<void*>(tramp), copied);
+    }
     return tramp;
 }
 

@@ -442,6 +442,43 @@ il2cpp::Il2CppMethod* InflateGenericMethod(il2cpp::Il2CppMethod* genericMethod, 
     return inflatedMethod;
 }
 
+il2cpp::Il2CppClass* InflateGenericClass(il2cpp::Il2CppClass* genericKlass, const std::vector<il2cpp::Il2CppClass*>& genericArguments) {
+    // Get the managed reflection generic method
+    il2cpp::Il2CppType* genericType = il2cpp::class_get_type(genericKlass);
+    il2cpp::Il2CppObject* reflectionKlass = il2cpp::type_get_object(genericType);
+
+     // Resolve System.Type and System.RuntimeType.
+    ClassCache& SystemType = GetClassRef("System.Type");
+    ClassCache& SystemRuntimeType = GetClassRef("System.RuntimeType");
+    il2cpp::Il2CppClass* systemTypeClass = SystemType.klass;
+
+    // Populate generic arguments.
+    std::vector<il2cpp::Il2CppObject*> typeObjects;
+
+    for (il2cpp::Il2CppClass* genericArgument : genericArguments) {
+        typeObjects.push_back(
+            il2cpp::type_get_object(
+                il2cpp::class_get_type(genericArgument)
+            )
+        );
+    }
+
+    il2cpp::Il2CppArray* typeArgs = il2cpp::array_new(systemTypeClass, typeObjects.size());
+    SetArrayElements(typeArgs, typeObjects, 0x20);
+
+     // Resolve MethodInfo.MakeGenericMethod(Type[]).
+    il2cpp::Il2CppObject* constructedClass = SystemRuntimeType.Invoke("MakeGenericType", reflectionKlass, typeArgs);
+
+    if (!constructedClass) {
+        MYO_LOG("HermesUtils", "Class unsuccesfully constructed");
+        return nullptr;
+    }
+
+    // Convert back to native method metadata.
+    il2cpp::Il2CppMethod* inflatedClass = il2cpp::class_from_system_type(constructedClass);
+    MYO_LOG("HermesUtils", "Class {} successfully inflated (Type Name: {})", il2cpp::class_get_name(inflatedClass), il2cpp::type_get_name(il2cpp::class_get_type(inflatedClass)));
+    return inflatedClass;
+}
 void init_utils(il2cpp::Il2CppAssembly** asms) {
     classes["fallback"] = {};
 
@@ -455,8 +492,10 @@ void init_utils(il2cpp::Il2CppAssembly** asms) {
     il2cpp::Il2CppImage* unityCoreImg = il2cpp::assembly_get_image(asms[UNITYCORE_INDEX]); 
     il2cpp::Il2CppImage* jsonImg = il2cpp::assembly_get_image(asms[JSON_INDEX]);
     il2cpp::Il2CppImage* unityUIImg = il2cpp::assembly_get_image(asms[UNITYUI_INDEX]);
-
+    
+    RegisterClassFull("List", mscorlibImg, "System.Collections.Generic", "List`1");
     RegisterClassFull("System.Type", mscorlibImg, "System", "Type");
+    RegisterClassFull("System.RuntimeType", mscorlibImg, "System", "RuntimeType");
     ClassCache ReflectionMethodInfo = RegisterClassFull("Reflection.MethodInfo", mscorlibImg, "System.Reflection", "RuntimeMethodInfo");
     // MakeGenericMethodObj = il2cpp::object_new(ReflectionMethodInfo.klass);
     // ReflectionMethodInfo.Invoke(".ctor", MakeGenericMethodObj);

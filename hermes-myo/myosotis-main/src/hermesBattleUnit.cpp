@@ -23,12 +23,12 @@ void hooked_BattleUnit_ctor(il2cpp::Il2CppObject* __this, void* datamodel, int32
         return;
     }
         
-    MYO_LOG("testmod", "Invoking the original constructor method"); 
+    // MYO_LOG("testmod", "Invoking the original constructor method"); 
 
     // invoke the original constructor method
     original_BattleUnitModel_ctor(__this, datamodel, instanceID, firstTurnSpeed);
 
-    MYO_LOG("testmod", "Original constructor method: Successful"); 
+    // MYO_LOG("testmod", "Original constructor method: Successful"); 
 
     // tests for the object
     il2cpp::Il2CppException* exc2 = nullptr; 

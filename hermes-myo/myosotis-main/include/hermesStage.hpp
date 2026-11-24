@@ -10,6 +10,7 @@ using StageControllerRoundEndFn = void(*)(il2cpp::Il2CppObject*, int32_t);
 inline std::vector<il2cpp::Il2CppObject*> playerBattleUnits = {};
 inline std::vector<il2cpp::Il2CppObject*> opponentBattleUnits = {};
 
+
 inline il2cpp::Il2CppField* stageController__stageName = nullptr;
 
 inline il2cpp::Il2CppMethod* stageController_ctor = nullptr;

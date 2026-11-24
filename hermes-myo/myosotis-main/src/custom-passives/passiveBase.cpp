@@ -3,6 +3,7 @@
 #include "il2cpp.hpp"
 #include "passiveBase.hpp"
 #include "hermesUtils.hpp"
+#include "hook.hpp"
 #include "custom-passives/moPassives.hpp"
 
 namespace myosotis::testmod {
@@ -1515,6 +1516,7 @@ void hooked_PassiveBase_CheckLoseBuffStackAndTurn(il2cpp::Il2CppObject* __this, 
 // C#: System.Int32 GetCoinScaleAdder(BattleActionModel action, BattleActionModel oppoActionOrNull, CoinModel coin)
 int32_t hooked_PassiveBase_GetCoinScaleAdder(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* action, il2cpp::Il2CppObject* oppoActionOrNull, il2cpp::Il2CppObject* coin) {
     int32_t returnValue = original_PassiveBase_GetCoinScaleAdder(__this, action, oppoActionOrNull, coin);
+    MYO_LOG("PassiveBase", "Does the hooked GetCoinScaleAdder exist?");
     auto it = PassiveBaseMap.find(__this);
     if (it != PassiveBaseMap.end()) {
         return it->second->GetCoinScaleAdder(returnValue, action, oppoActionOrNull, coin);
@@ -2071,7 +2073,9 @@ void hooked_PassiveBase_OnAddUnitView(il2cpp::Il2CppObject* __this, il2cpp::Il2C
 void hooked_PassiveBase_OnStageStart(il2cpp::Il2CppObject* __this, int32_t timing) {
     original_PassiveBase_OnStageStart(__this, timing);
     auto it = PassiveBaseMap.find(__this);
+    MYO_LOG("PassiveBase", "Does this run? Address: {}, Exists: {}", __this, PassiveBaseMap.contains(__this));
     if (it != PassiveBaseMap.end()) {
+        MYO_LOG("PassiveBase", "It exists. Running something or other.");
         it->second->OnStageStart(timing);
     }
 }
@@ -3635,6 +3639,67 @@ bool hooked_PassiveBase_IsRunUniqueAction(il2cpp::Il2CppObject* __this, il2cpp::
 }
 
 
+int32_t hooked_BattleActionModel_GetExpectedOpponentParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult) {
+    int32_t value = original_BattleActionModel_GetExpectedOpponentParryingResultAdder(__this, actorResult, oppoActionOrNull, oppoResult);
+    MYO_LOG("PassiveBase", "GetExpectedOpponentParryingResultAdder {}", value);
+    return 50;
+}
+
+int32_t hooked_BattleActionModel_GetExpectedParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult) {
+    
+    int32_t value = original_BattleActionModel_GetExpectedParryingResultAdder(__this, actorResult, oppoActionOrNull, oppoResult);
+    MYO_LOG("PassiveBase", "GetExpectedParryingResultAdder {}", value);
+    return 50;
+}
+// C#: System.Void .ctor(BattleUnitModel model, UnitDataModel rawDataModel)
+void hooked_PassiveBase_ctor(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* model, il2cpp::Il2CppObject* rawDataModel) {
+    // call the constructor first and foremost
+    original_PassiveBase_ctor(__this, model, rawDataModel);
+    // MYO_LOG("HermesPassiveBase", "A PassiveBase has been constructed");
+
+    // Get all the class cache refs necessary
+    ClassCache& PassiveDetailC = GetClassRef("PassiveDetail");
+    ClassCache& PassiveModelC = GetClassRef("PassiveModel");
+    ClassCache& PassiveStaticDataC = GetClassRef("PassiveStaticData");
+    ClassCache& List_PassiveModel = GetClassRef("List_PassiveModel");
+
+    // get all passive list, and iterate to check if a custom passive is there
+    il2cpp::Il2CppObject* allPassiveList = PassiveDetailC.Invoke("get_PassiveList", __this);
+    int32_t allPassiveListCount = List_PassiveModel.InvokeUnbox<int32_t>("get_Count", allPassiveList);
+    il2cpp::Il2CppObject* activatedPassivesList = PassiveDetailC.Invoke("GetAllActivatedPassives", __this);
+    
+    PassiveDetail* passiveDetail = nullptr;
+    bool createdDetail = false;
+    // MYO_LOG("PassiveBase", "Passive Total: {}", allPassiveListCount);
+    for (int32_t i = 0; i < allPassiveListCount; i++) {
+        
+        
+        // check the ids of the passive. if it matches a custom passive, create the BuffDetail. 
+        il2cpp::Il2CppObject* passiveModelObj = List_PassiveModel.Invoke("get_Item", allPassiveList, &i);
+        il2cpp::Il2CppObject* passiveStaticDataObj = PassiveModelC.Invoke("get_ClassInfo", passiveModelObj);
+        int32_t passiveId = PassiveStaticDataC.InvokeUnbox<int32_t>("get_ID", passiveStaticDataObj);
+        // MYO_LOG("PassiveBase", "Passive ID: {}", passiveId);
+        if (allCustomPassiveIDs.contains(passiveId)) {
+
+            // initilize the passive detail if it actually has a custom id (but ONCE!)
+            if (!createdDetail) {
+                passiveDetail = new PassiveDetail();
+                createdDetail = true;
+                passiveDetail->passiveDetailObj = __this;
+                passiveDetail->allPassiveList = allPassiveList;
+                passiveDetail->activePassiveList = activatedPassivesList;
+                PassiveBaseMap[__this] = passiveDetail;
+                MYO_LOG("PassiveBase", "Storing {} in PassiveBaseMap", __this);
+            }
+            
+            passiveDetail->tryAddCustomPassive(passiveModelObj, passiveId);
+            MYO_LOG("HermesPassiveBase", "Added a custom passive to an object {}", passiveModelObj);
+        }
+    }
+    
+    
+}
+
 void init_PassiveBase(il2cpp::Il2CppImage* img) {
     // Register all Passives Here
     registerPassive<MoPassive1>(1019901);
@@ -3644,7 +3709,20 @@ void init_PassiveBase(il2cpp::Il2CppImage* img) {
     // Hook PassiveBase. Lines that are commented out are buff-container plumbing / queries / UI helpers
     // that a passive has no reason to override (matching the commented-out overrides in PassiveDetail).
     ClassCache PassiveDetailC = RegisterClassFull("PassiveDetail", img, "", "PassiveDetail");
+    ClassCache PassiveModelC = RegisterClassFull("PassiveModel", img, "", "PassiveModel");
+    ClassCache PassiveStaticDataC = RegisterClassFull("PassiveStaticData", img, "", "PassiveStaticData");
+    ClassCache List_PassiveModelC = RegisterClassFull(InflateGenericClass(GetClass("List").klass, {PassiveModelC.klass}), "List_PassiveModel");
+    
 
+    ClassCache BattleActionModelC = RegisterClassFull("BattleActionModel", img, "", "BattleActionModel");
+    original_BattleActionModel_GetExpectedOpponentParryingResultAdder = 
+        InstallHook<BattleActionModelGetExpectedOpponentParryingResultAdderFn>(BattleActionModelC.GetMethod("GetExpectedOpponentParryingResultAdder"), &hooked_BattleActionModel_GetExpectedOpponentParryingResultAdder);
+    original_BattleActionModel_GetExpectedParryingResultAdder =
+        InstallHook<BattleActionModelGetExpectedParryingResultAdderFn>(BattleActionModelC.GetMethod("GetExpectedParryingResultAdder"), &hooked_BattleActionModel_GetExpectedParryingResultAdder);
+    hook::ONLY_LOG_HOOKS_ON_ERROR = true;
+
+    
+    
     original_PassiveBase_OnStartBehaviour = InstallHook<PassiveBaseOnStartBehaviourFn>(PassiveDetailC.GetMethod("OnStartBehaviour"), &hooked_PassiveBase_OnStartBehaviour);
     original_PassiveBase_OnSucceedAttack = InstallHook<PassiveBaseOnSucceedAttackFn>(PassiveDetailC.GetMethod("OnSucceedAttack"), &hooked_PassiveBase_OnSucceedAttack);
     original_PassiveBase_OnRollOneCoin_AfterAttack = InstallHook<PassiveBaseOnRollOneCoin_AfterAttackFn>(PassiveDetailC.GetMethod("OnRollOneCoin_AfterAttack"), &hooked_PassiveBase_OnRollOneCoin_AfterAttack);
@@ -3936,6 +4014,10 @@ void init_PassiveBase(il2cpp::Il2CppImage* img) {
     original_PassiveBase_OnAddBattleAction = InstallHook<PassiveBaseOnAddBattleActionFn>(PassiveDetailC.GetMethod("OnAddBattleAction"), &hooked_PassiveBase_OnAddBattleAction);
     original_PassiveBase_OnRemoveBattleAction = InstallHook<PassiveBaseOnRemoveBattleActionFn>(PassiveDetailC.GetMethod("OnRemoveBattleAction"), &hooked_PassiveBase_OnRemoveBattleAction);
     original_PassiveBase_IsRunUniqueAction = InstallHook<PassiveBaseIsRunUniqueActionFn>(PassiveDetailC.GetMethod("IsRunUniqueAction"), &hooked_PassiveBase_IsRunUniqueAction);
+
+    original_PassiveBase_ctor = InstallHook<PassiveBasectorFn>(PassiveDetailC.GetMethod(".ctor"), &hooked_PassiveBase_ctor);
+
+    hook::ONLY_LOG_HOOKS_ON_ERROR = false;
 }
 
 } // myosotis::testmod

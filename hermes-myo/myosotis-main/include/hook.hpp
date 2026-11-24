@@ -33,6 +33,8 @@ namespace myosotis::hook {
 // addresses, not MethodInfo->methodPointer indirection). Also overwrites
 // methodPointer for runtime_invoke paths. No trampoline — our hooks are
 // prefix-only and don't call the original.
+inline bool ONLY_LOG_HOOKS_ON_ERROR = false;
+
 void* install_inline(::myosotis::il2cpp::Il2CppMethod* method, void* new_ptr);
 
 void* install_inline_2(::myosotis::il2cpp::Il2CppMethod* method, void* new_ptr);

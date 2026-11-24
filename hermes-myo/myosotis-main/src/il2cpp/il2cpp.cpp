@@ -75,6 +75,7 @@ bool init() {
     (void)fn("il2cpp_class_from_type");
     (void)fn("il2cpp_class_is_generic");
     (void)fn("il2cpp_class_get_element_class");
+    (void)fn("il2cpp_class_from_system_type");
     (void)fn("il2cpp_method_get_name");
     (void)fn("il2cpp_method_get_return_type");
     (void)fn("il2cpp_method_get_param_count");
@@ -97,6 +98,7 @@ bool init() {
     (void)fn("il2cpp_string_chars");
     (void)fn("il2cpp_string_length");
     (void)fn("il2cpp_thread_attach");
+    
     MYO_LOG("il2cpp", "bridge initialized");
     return true;
 }
@@ -225,6 +227,10 @@ bool class_is_generic(Il2CppClass* klass) {
 Il2CppClass* class_get_element_class(Il2CppClass* klass) {
     using Sig = Il2CppClass* (*)(Il2CppClass*);
     return fn_t<Sig>("il2cpp_class_get_element_class")(klass);
+}
+Il2CppClass* class_from_system_type(Il2CppObject* type) {
+    using Sig = Il2CppClass* (*)(Il2CppClass*);
+    return fn_t<Sig>("il2cpp_class_from_system_type")(type);
 }
 
 const char* method_get_name(Il2CppMethod* m) {

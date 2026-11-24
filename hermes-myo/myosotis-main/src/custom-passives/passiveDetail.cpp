@@ -1,4 +1,5 @@
 #include "passiveBase.hpp"
+
 #include "hermesUtils.hpp"
 
 // passiveDetail.cpp
@@ -8,14 +9,36 @@
 namespace myosotis::testmod {
 
 PassiveBase* PassiveDetail::activeCustomPassive(il2cpp::Il2CppObject* passive) {
+    // MYO_LOG("PassiveDetail", "Passive: {}, ActivePassiveList: {}", passive, activePassiveList);
     if (!passive || !activePassiveList) return nullptr;
     auto it = customPassiveMap.find(passive);
     if (it == customPassiveMap.end() || !it->second) return nullptr;
 
     ClassCache& List_PassiveModel = GetClassRef("List_PassiveModel"); // List<PassiveModel>
-    bool containsPassive = List_PassiveModel.InvokeUnbox<bool>("Contains", activePassiveList, passive);
+    ClassCache& PassiveDetailC = GetClassRef("PassiveDetail");
+
+    // il2cpp::Il2CppObject* listFromMethod = PassiveDetailC.Invoke("GetAllActivatedPassives", passiveDetailObj);
+    bool containsPassive = List_PassiveModel.InvokeUnbox<bool>("Contains", allPassiveList, passive);
+    // int32_t passiveCount = List_PassiveModel.InvokeUnbox<int32_t>("get_Count", activePassiveList);
+    // int32_t allPassiveCount = List_PassiveModel.InvokeUnbox<int32_t>("get_Count", allPassiveList);
+    // MYO_LOG("PassiveDetail", "Contains Passive {}: {}, {}, {}", passive, containsPassive, passiveCount, allPassiveCount);
     return containsPassive ? it->second : nullptr;
 }
+
+
+void PassiveDetail::tryAddCustomPassive(il2cpp::Il2CppObject* passiveModel, int32_t id) {
+    auto it = passiveRegistry().find(id);
+    if (it == passiveRegistry().end()) return;              // not one of our custom passives
+    if (customPassiveMap.contains(passiveModel)) return;    // already created, don't duplicate
+
+    std::unique_ptr<PassiveBase> p = it->second();          // calls the lambda -> new MoPassiveN
+    p->passiveObj = passiveModel;                           // bind it to the game-side object
+
+    customPassiveList.push_back(passiveModel);
+    customPassiveMap[passiveModel] = p.release();           // PassiveDetail owns it from here
+    MYO_LOG("PassiveDetail", "Got PassiveModel {} of ID {}", passiveModel, id);
+} // 
+
 
 // C#: System.Void OnStartBehaviour(BattleActionModel action, BATTLE_EVENT_TIMING timing)
 void PassiveDetail::OnStartBehaviour(il2cpp::Il2CppObject* action, int32_t timing) {
@@ -641,6 +664,7 @@ void PassiveDetail::CheckLoseBuffStackAndTurn(il2cpp::Il2CppObject* info, int32_
 
 // C#: System.Int32 GetCoinScaleAdder(BattleActionModel action, BattleActionModel oppoActionOrNull, CoinModel coin)
 int32_t PassiveDetail::GetCoinScaleAdder(int32_t returnValue, il2cpp::Il2CppObject* action, il2cpp::Il2CppObject* oppoActionOrNull, il2cpp::Il2CppObject* coin) {
+    MYO_LOG("PassiveDetail", "DOES GET COIN SCALE ADDER EVEN EXIST???");
     for (il2cpp::Il2CppObject* passive : customPassiveList) {
         if (PassiveBase* customPassive = activeCustomPassive(passive)) {
             returnValue = customPassive->GetCoinScaleAdder(returnValue, action, oppoActionOrNull, coin);

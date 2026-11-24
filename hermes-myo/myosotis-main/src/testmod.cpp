@@ -12,6 +12,7 @@
 #include "hermesLocalization.hpp"
 #include "hermesUnity.hpp"
 #include "passiveBase.hpp"
+#include "custom-framework/modFramework.hpp"
 #include "MinHook.h"
 #include <windows.h>
 #include <string>
@@ -144,15 +145,21 @@ void init_all() {
     const int JSON_INDEX = 18;
     const int UNITYUI_INDEX = 22;
     img = il2cpp::assembly_get_image(asms[ASSEMBLY_C_SHARP_INDEX]); 
+    IMG_MAIN = img;
     mscorlibImg = il2cpp::assembly_get_image(asms[MSCORLIB_INDEX]); 
+    IMG_MSCORLIB = mscorlibImg;
     unityCoreImg = il2cpp::assembly_get_image(asms[UNITYCORE_INDEX]); 
+    IMG_UNITYCORE = unityCoreImg;
     jsonImg = il2cpp::assembly_get_image(asms[JSON_INDEX]);
+    IMG_JSON = jsonImg;
     unityUIImg = il2cpp::assembly_get_image(asms[UNITYUI_INDEX]);
+    IMG_UNITYUI = unityUIImg;
     const char* img_name = il2cpp::image_get_name(img); 
     const char* jsonImg_name = il2cpp::image_get_name(jsonImg);
     MYO_LOG("testmod", "Test Mod has loaded {}, {}!", img_name, jsonImg_name); 
 
     mainImg = img;
+    
 
     // MYO_LOG("testmod", "{} successfully loaded.", classname); 
     const char* namespaze = ""; 
@@ -173,6 +180,8 @@ void init_all() {
     init_buff_stuff(img, namespaze);
     init_unity_objects(img, namespaze, unityCoreImg, mscorlibImg, unityUIImg);
     init_PassiveBase(img);
+    init_modding_framework();
+    
     // 
     
 

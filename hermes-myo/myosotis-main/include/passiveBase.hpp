@@ -31,6 +31,7 @@ public:
 
     // the game-side PassiveBase instance this object is paired with
     il2cpp::Il2CppObject* PassiveBaseObj = nullptr;
+    il2cpp::Il2CppObject* passiveObj = nullptr;
 
     // C#: System.Void OnStartBehaviour(BattleActionModel action, BATTLE_EVENT_TIMING timing)
     virtual void OnStartBehaviour(il2cpp::Il2CppObject* action, int32_t timing);
@@ -914,7 +915,7 @@ public:
     ~CustomPassiveBase() override = default;
 
     // game-side object this custom passive is bound to
-    il2cpp::Il2CppObject* passiveObj = nullptr;
+    
 };
 
 // One per unit. Overrides the battle-relevant PassiveBase virtuals and forwards them to the
@@ -928,10 +929,14 @@ public:
     il2cpp::Il2CppObject* activePassiveList = nullptr;  // List<PassiveModel>, only active passives
     std::vector<il2cpp::Il2CppObject*> customPassiveList = {};  // our custom passives (game PassiveModel objects)
     std::unordered_map<il2cpp::Il2CppObject*, PassiveBase*> customPassiveMap = {};  // game PassiveModel -> custom passive
+    
 
     // returns the custom passive for `passive` only if it exists AND is currently in activePassiveList
     PassiveBase* activeCustomPassive(il2cpp::Il2CppObject* passive);
+    void tryAddCustomPassive(il2cpp::Il2CppObject* passiveModel, int32_t id);
 
+    void testmethod(il2cpp::Il2CppObject* test);
+    
     void OnStartBehaviour(il2cpp::Il2CppObject* action, int32_t timing) override;
     void OnSucceedAttack(il2cpp::Il2CppObject* action, il2cpp::Il2CppObject* coin, il2cpp::Il2CppObject* target, int32_t finalDmg, int32_t realDmg, int32_t realHpDmg, bool isCritical, il2cpp::Il2CppObject* isWinDuel, int32_t timing) override;
     void OnRollOneCoin_AfterAttack(il2cpp::Il2CppObject* action, il2cpp::Il2CppObject* coin) override;
@@ -1227,6 +1232,8 @@ public:
 
 using PassiveFactory = std::function<std::unique_ptr<PassiveBase>()>;
 
+inline std::unordered_set<int32_t> allCustomPassiveIDs = {};
+
 inline std::unordered_map<int32_t, PassiveFactory>& passiveRegistry() {
     static std::unordered_map<int32_t, PassiveFactory> reg;  // function-local static avoids init-order problems
     return reg;
@@ -1236,6 +1243,7 @@ inline std::unordered_map<int32_t, PassiveFactory>& passiveRegistry() {
 template <typename T>
 void registerPassive(int32_t id) {
     static_assert(std::is_base_of_v<PassiveBase, T>, "T must derive from PassiveBase");
+    allCustomPassiveIDs.insert(id);
     passiveRegistry()[id] = [] { return std::make_unique<T>(); };
 }
 
@@ -2702,5 +2710,24 @@ using PassiveBaseIsRunUniqueActionFn = bool(*)(il2cpp::Il2CppObject*, il2cpp::Il
 inline PassiveBaseIsRunUniqueActionFn original_PassiveBase_IsRunUniqueAction = nullptr;
 bool hooked_PassiveBase_IsRunUniqueAction(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* uniqueTiming, il2cpp::Il2CppObject* thisAction, il2cpp::Il2CppObject* mainAction, il2cpp::Il2CppObject* oppoActionOrNull);
 
+// C#: System.Void .ctor(BattleUnitModel model, UnitDataModel rawDataModel)
+using PassiveBasectorFn = void(*)(il2cpp::Il2CppObject*, il2cpp::Il2CppObject*, il2cpp::Il2CppObject*);
+inline PassiveBasectorFn original_PassiveBase_ctor = nullptr;
+void hooked_PassiveBase_ctor(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* model, il2cpp::Il2CppObject* rawDataModel);
 
+
+// System.Int32 GetExpectedParryingResultAdder(System.Int32 actorResult, BattleActionModel oppoActionOrNull, System.Int32 oppoResult) {}//
+
+using BattleActionModelGetExpectedParryingResultAdderFn = int32_t(*)(il2cpp::Il2CppObject*, int32_t, il2cpp::Il2CppObject*, int32_t);
+inline BattleActionModelGetExpectedParryingResultAdderFn original_BattleActionModel_GetExpectedParryingResultAdder = nullptr;
+int32_t hooked_BattleActionModel_GetExpectedParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult);
+
+// System.Int32 GetExpectedOpponentParryingResultAdder(System.Int32 actorResult, BattleActionModel oppoAction, System.Int32 oppoResult) {}//
+using BattleActionModelGetExpectedOpponentParryingResultAdderFn = int32_t(*)(il2cpp::Il2CppObject*, int32_t, il2cpp::Il2CppObject*, int32_t);
+inline BattleActionModelGetExpectedOpponentParryingResultAdderFn original_BattleActionModel_GetExpectedOpponentParryingResultAdder = nullptr;
+int32_t hooked_BattleActionModel_GetExpectedOpponentParryingResultAdder(il2cpp::Il2CppObject* __this, int32_t actorResult, il2cpp::Il2CppObject* oppoActionOrNull, int32_t oppoResult);
+
+
+// System.Int32 GetCoinScaleAdder(BattleActionModel action, BattleActionModel oppoActionOrNull, CoinModel coin) {}//
+// System.Int32 GetExpectedCoinScaleAdder(BattleActionModel action, CoinModel coin, COIN_ROLL_TYPE rollType, SinActionModel targetSinActionOrNull) {}//
 } // myosotis::testmod

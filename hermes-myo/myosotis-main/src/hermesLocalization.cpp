@@ -127,19 +127,6 @@ void hooked_JsonDataListPersonality_ctor(il2cpp::Il2CppObject* __this) {
         IConverterUtils.GetMethod("GetLocalJsonPath"),  {TextData_Personality.klass});
         IConverterUtils.AddMethod(GetLocal_TextDataPersonality, "GetLocal_TextDataPersonality");
         MYO_LOG("HermesLocal", "Inflated method return type: {}", type_name(il2cpp::method_get_return_type(GetLocal_TextDataPersonality)));
-        il2cpp::Il2CppObject* rootObj = nullptr;
-        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("Assets/Resources_moved/Localize/en/EN_Personalities.json"));
-        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
-        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("Personalities"));
-        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
-        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("diddy/ilovediddy/diddymansion"));
-        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
-        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("Limbus Company/LimbusCompany_Data/Assets/Resources_moved/Localize/en/EN_Personalities.json"));
-        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
-        rootObj = IConverterUtils.Invoke("GetLocal_TextDataPersonality", nullptr, ToIl2CppStr("C:/Program Files (x86)/Steam/steamapps/common/Limbus Company/LimbusCompany_Data/Assets/Resources_moved/Localize/en/EN_Personalities.json"));
-        MYO_LOG("HermesLocal", "rootObj: {}", rootObj);
-
-
     }
     // MYO_LOG("testmod", "successfully initialized JsonDataListPersonality");
     il2cpp::Il2CppObject* personalityDict = nullptr;
@@ -163,7 +150,7 @@ void hooked_JsonDataListPersonality_InitRemote(il2cpp::Il2CppObject* __this, il2
 }
 void hooked_JsonDataListPersonality_SetDictionary(il2cpp::Il2CppObject* __this, void* a, void* b) {
     original_jsonDataListPersonality_SetDictionary(__this, a, b);
-    MYO_LOG("testmod", "Set Dictionary 2, {}, {}, {}, {}", a, b, il2cpp::class_get_name(il2cpp::object_get_class(a)), type_name(il2cpp::class_get_type(il2cpp::object_get_class(a))));
+    // MYO_LOG("testmod", "Set Dictionary 2, {}, {}, {}, {}", a, b, il2cpp::class_get_name(il2cpp::object_get_class(a)), type_name(il2cpp::class_get_type(il2cpp::object_get_class(a))));
 }
 il2cpp::Il2CppObject* hooked_RomoteList_getPersonalityFilePaths(il2cpp::Il2CppObject* __this) {
     il2cpp::Il2CppObject* strListObj = original_RomoteList_getPersonalityFilePaths(__this);
@@ -207,7 +194,7 @@ il2cpp::Il2CppObject* hooked_TextDataConverter_GetLocalInitializer(il2cpp::Il2Cp
 }
 
 il2cpp::Il2CppObject* hooked_TextDataConverter_GetJsonFilePathList(il2cpp::Il2CppObject* __this, il2cpp::Il2CppObject* a, il2cpp::Il2CppString* b, int32_t c, bool d) {
-    MYO_LOG("HermesLocal", "this: {}, a: {}, b: {}, c: {}, d: {}", __this, a, unbox_string(b), c, d);
+    // MYO_LOG("HermesLocal", "this: {}, a: {}, b: {}, c: {}, d: {}", __this, a, unbox_string(b), c, d);
     il2cpp::Il2CppObject* stringList = original_TextDataConverter_GetJsonFilePathList(__this, a, b, c, d);
 
     std::string lang = "";
@@ -231,7 +218,7 @@ il2cpp::Il2CppObject* hooked_TextDataConverter_GetJsonFilePathList(il2cpp::Il2Cp
         std::string localizeFolderPath = std::format("{}/{}", languageFolder, strStr);
         if (fs::exists(localizeFolderPath) && fs::is_directory(localizeFolderPath)) {
             // iterate through the directory for all files 
-            MYO_LOG("HermesLocal", "Iterating through directory {}", localizeFolderPath);
+            MYO_LOG("HermesLocal", "Iterating through directory {} for localization", localizeFolderPath);
             for (const auto& entry : fs::directory_iterator(localizeFolderPath)) {
                 // Filter to only display regular files (skip directories, symlinks, etc.)
                 if (fs::is_regular_file(entry.status()) && entry.path().extension().string() == ".json") {
@@ -241,23 +228,22 @@ il2cpp::Il2CppObject* hooked_TextDataConverter_GetJsonFilePathList(il2cpp::Il2Cp
                 }
             }
         } else {
-            MYO_LOG("HermesLocal", "Expected folder with name {} in {}", strStr, lang);
+            MYO_LOG("HermesLocal", "Expected folder with name {} in {} for localization", strStr, lang);
         }
     }
 
-    for (int32_t i = 0; i < listCount; i++) {
-        il2cpp::Il2CppString* strObj = StringListClass.Invoke("get_Item", a, &i);
-        std::string strStr = unbox_string(strObj);
-        MYO_LOG("HermesLocal", "String: {}", unbox_string(strObj));
-    }
+    // for (int32_t i = 0; i < listCount; i++) {
+    //     il2cpp::Il2CppString* strObj = StringListClass.Invoke("get_Item", a, &i);
+    //     std::string strStr = unbox_string(strObj);
+    //     MYO_LOG("HermesLocal", "String: {}", unbox_string(strObj));
+    // }
     
-    listCount = StringListClass.InvokeUnbox<int32_t>("get_Count", stringList);
-    for (int32_t i = 0; i < listCount; i++) {
-        il2cpp::Il2CppString* strObj = StringListClass.Invoke("get_Item", stringList, &i);
-        std::string strStr = unbox_string(strObj);
-        MYO_LOG("HermesLocal", "String: {}", unbox_string(strObj));
-    }
-
+    // listCount = StringListClass.InvokeUnbox<int32_t>("get_Count", stringList);
+    // for (int32_t i = 0; i < listCount; i++) {
+    //     il2cpp::Il2CppString* strObj = StringListClass.Invoke("get_Item", stringList, &i);
+    //     std::string strStr = unbox_string(strObj);
+    //     MYO_LOG("HermesLocal", "String: {}", unbox_string(strObj));
+    // }
 
     return stringList;
 }

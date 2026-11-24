@@ -76,6 +76,7 @@ Il2CppType*     class_get_type(Il2CppClass* klass);
 Il2CppClass*    class_from_type(Il2CppType* t);
 bool            class_is_generic(Il2CppClass* klass);
 Il2CppClass*    class_get_element_class(Il2CppClass* klass);
+Il2CppClass*    class_from_system_type(Il2CppObject* type);
 
 const char*     method_get_name(Il2CppMethod* m);
 Il2CppType*     method_get_return_type(Il2CppMethod* m);

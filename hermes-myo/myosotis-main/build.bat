@@ -15,7 +15,8 @@ if not exist build mkdir build
 
 set INC=-Iinclude -Igenerated
 set DEF=-DUNICODE -D_UNICODE
-set WARN=-Wall -Wextra -Wpedantic -Wconversion -Wshadow -Wdouble-promotion -Wformat=2 -Wcast-align -Wnull-dereference -Wswitch-enum
+REM set WARN=-Wall _Wextra -Wpedantic -Wconversion -Wshadow -Wdouble-promotion -Wformat=2 -Wcast-align -Wnull-dereference -Wswitch-enum
+
 set OPT=-target x86_64-windows-gnu -O3 -std=c++23 %WARN% %INC% %DEF%
 set COPT=-target x86_64-windows-gnu -O3 -Iinclude -Igenerated -Isrc -Isrc\hde %DEF%
 
@@ -80,6 +81,9 @@ src\hermesUtils.cpp ^
 src\custom-passives\passiveBase.cpp ^
 src\custom-passives\passiveDetail.cpp ^
 src\custom-passives\moPassives.cpp ^
+src\custom-framework\modFramework.cpp ^
+src\custom-framework\battleUnitModel.cpp ^
+src\custom-framework\battleActionModel.cpp ^
 src\stb_image.cpp ^
 src\il2cpp\pe.cpp ^
 src\il2cpp\scan.cpp ^

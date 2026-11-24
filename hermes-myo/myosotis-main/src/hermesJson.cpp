@@ -36,7 +36,7 @@ void hooked_StringStaticDataJson_ctor(il2cpp::Il2CppObject* __this, void* dataCl
 
     std::string folderPath = std::format("C:/Program Files (x86)/Steam/steamapps/common/Limbus Company/hermesMod/data/{}", dataClassStr);
     if (fs::exists(folderPath) && fs::is_directory(folderPath)) {
-        MYO_LOG("HermesLocal", "Iterating through directory {}", folderPath);
+        MYO_LOG("HermesJson", "Iterating through directory {}", folderPath);
         for (const auto& entry : fs::directory_iterator(folderPath)) {
             // Filter to only display regular files (skip directories, symlinks, etc.)
             if (fs::is_regular_file(entry.status()) && entry.path().extension().string() == ".json") {
@@ -53,11 +53,11 @@ void hooked_StringStaticDataJson_ctor(il2cpp::Il2CppObject* __this, void* dataCl
                 buffer << file.rdbuf();
                 std::string jsonStr = buffer.str();
                 hooked_StringStaticDataJson_AddData(__this, ToIl2CppStr(jsonStr.c_str()));
-                MYO_LOG("HermesLocal", "Found file {} in directory", filePath);
+                // MYO_LOG("HermesJson", "Found file {} in directory", filePath);
             }
         } 
     } else {   
-        MYO_LOG("HermesLocal", "Expected folder with name {}", dataClassStr);
+        MYO_LOG("HermesJson", "Expected folder with name {}", dataClassStr);
     }
 }
 

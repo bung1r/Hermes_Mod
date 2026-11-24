@@ -273,8 +273,17 @@ void SetArrayElements(il2cpp::Il2CppArray* array, const std::vector<T*>& element
     }
 }
 il2cpp::Il2CppMethod* InflateGenericMethod(il2cpp::Il2CppMethod* genericMethod, const std::vector<il2cpp::Il2CppClass*>& genericArguments);
-
+il2cpp::Il2CppClass* InflateGenericClass(il2cpp::Il2CppClass* genericKlass, const std::vector<il2cpp::Il2CppClass*>& genericArguments);
 std::string GetFieldInObjStr(il2cpp::Il2CppObject* obj, il2cpp::Il2CppObject* objClass, const char* name);
+
+// All the IMGs, so we don't need to pass them through dumb params
+il2cpp::Il2CppImage* IMG_MAIN = nullptr;
+il2cpp::Il2CppImage* IMG_JSON = nullptr;
+il2cpp::Il2CppImage* IMG_UNITYCORE = nullptr;
+il2cpp::Il2CppImage* IMG_MSCORLIB = nullptr;
+il2cpp::Il2CppImage* IMG_UNITYUI = nullptr;
+
+
 
 void init_utils(il2cpp::Il2CppAssembly** asms);
 
